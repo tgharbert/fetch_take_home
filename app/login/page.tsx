@@ -1,34 +1,36 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        "https://frontend-take-home-service.fetch.com/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ name: name, email: email }),
-        }
-      );
-
+      const response = await fetch(`/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ name, email }),
+      });
       if (!response.ok) {
+        // HANDLE ERROR IN DOM
         throw new Error("Network response was not ok");
       }
+      // redirect to '/'
+      router.push("/dogs");
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <div className=" flex h-screen justify-center items-center  ">
       <form
@@ -41,10 +43,10 @@ export default function Login() {
         <div className="flex-row self-center">
           {/* <label className="text-black font-bold">Name: </label> */}
           <input
-            onChange={(e) => setName(e.target.value)}
-            value={name}
             type="text"
             placeholder="Name"
+            onChange={(e) => setName(e.target.value)}
+            value={name}
             className="text-black px-1 rounded-md ml-2"
             required
           ></input>
@@ -52,10 +54,10 @@ export default function Login() {
         <div className="flex-row self-center">
           {/* <label className="text-black font-bold">Email: </label> */}
           <input
-            onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="Email"
             value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="text-black px-1 rounded-md ml-2 "
             required
           ></input>
