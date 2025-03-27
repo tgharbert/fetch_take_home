@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
 
   // Get all search parameters
   const searchParams = req.nextUrl.searchParams;
-  const breed = searchParams.get("breed");
+  const breeds = searchParams.getAll("breeds");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
   const sort = searchParams.get("sort");
@@ -14,10 +14,16 @@ export async function GET(req: NextRequest) {
   // Build query parameters for external API
   const queryParams = new URLSearchParams();
 
-  if (breed) queryParams.append("breeds", breed);
   if (minAge) queryParams.append("ageMin", minAge);
   if (maxAge) queryParams.append("ageMax", maxAge);
   if (sort) queryParams.append("sort", sort);
+
+  // Add all breeds to the query
+  if (breeds && breeds.length > 0) {
+    breeds.forEach((breed) => {
+      queryParams.append("breeds", breed);
+    });
+  }
 
   if (!cookie) {
     return redirect("/login");
@@ -36,10 +42,16 @@ export async function GET(req: NextRequest) {
         credentials: "include",
       }
     );
-    console.log("Response from external API:", response);
 
-    // Rest of your code remains the same
-    // ...
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: "Failed to fetch dogs" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching dogs:", error);
     return NextResponse.json(

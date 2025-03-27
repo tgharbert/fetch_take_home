@@ -2,13 +2,10 @@ import BreedCard from "./BreedCard";
 
 export default function DogList({
   selectedBreeds,
-  handleBreedClick,
+  removeBreed,
 }: {
   selectedBreeds: string[];
-  handleBreedClick: (
-    e: React.MouseEvent<HTMLButtonElement>,
-    breed: string
-  ) => void;
+  removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
 }) {
   return (
     <div className="flex flex-col items-center">
@@ -18,7 +15,7 @@ export default function DogList({
       <ul>
         {selectedBreeds.map((breed: string) => (
           <li key={breed}>
-            <BreedCard breed={breed} handleBreedClick={handleBreedClick} />
+            <BreedCard breed={breed} removeBreed={removeBreed} />
           </li>
         ))}
       </ul>

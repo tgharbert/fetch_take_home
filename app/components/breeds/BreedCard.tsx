@@ -1,20 +1,18 @@
 const BreedCard = ({
   breed,
-  handleBreedClick,
+  removeBreed,
 }: {
   breed: string;
-  handleBreedClick: (
-    e: React.MouseEvent<HTMLButtonElement>,
-    breed: string
-  ) => void;
+  removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
 }) => {
   return (
-    <div>
+    <div className="flex flex-row items-center justify-between bg-purple-400 text-white p-2 m-2 rounded-lg">
+      <p className="fill-indigo-950 font-bold">{breed}</p>
       <button
-        onClick={(e) => handleBreedClick(e, breed)}
-        className="flex flex-col items-center"
+        onClick={(e) => removeBreed(e, breed)}
+        className="flex flex-col items-center ml-2"
       >
-        <p className="fill-indigo-950 font-bold">{breed}</p>
+        X
       </button>
     </div>
   );

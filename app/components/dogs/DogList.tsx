@@ -13,13 +13,11 @@ export default function DogList({
       <button className="bg-orange-400 " onClick={(e) => breedViewSelector(e)}>
         Back to Breeds
       </button>
-      <ul>
+      <div className="grid grid-cols-2 gap-4">
         {dogs.map((dog: Dog) => (
-          <li key={dog.id}>
-            <DogCard dog={dog} />
-          </li>
+          <DogCard key={dog.id} dog={dog} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
