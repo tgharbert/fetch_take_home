@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { redirect } from "next/navigation";
 
 export async function GET(req: Request) {
   const baseUrl = "https://frontend-take-home-service.fetch.com";
@@ -10,7 +9,9 @@ export async function GET(req: Request) {
 
     // if there is no cookie, redirect to login
     if (!cookie) {
-      return redirect("/login");
+      console.log("no cookie");
+      // redirect to login
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const url = `${baseUrl}/dogs/breeds`;
