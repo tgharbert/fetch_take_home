@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         "Content-Type": "application/json",
         cookie,
       },
-      // credentials: "include",
+      credentials: "include",
     });
     const data = await response.json();
     return NextResponse.json(data);

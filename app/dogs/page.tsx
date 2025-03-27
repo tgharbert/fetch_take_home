@@ -16,6 +16,42 @@ export default function Dogs() {
 
   console.log("SELECTED BREED: ", selectedBreed);
 
+  useEffect(() => {
+    if (selectedBreed) {
+      console.log("FETCHING DOGS FOR BREED: ", selectedBreed);
+      setLoading(true);
+      const fetchDogs = async () => {
+        try {
+          const res = await fetch(`/api/dogs/${selectedBreed}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          });
+          if (res.status === 401) {
+            setLoading(false);
+
+            router.push("/login");
+          }
+          if (!res.ok) {
+            setLoading(false);
+            setError("Failed to fetch dogs");
+            throw new Error("Network response was not ok");
+          }
+          const data = await res.json();
+          // send data.resultIds to post route for fetching dog
+          console.log("FETCHED DOGS: ", data.resultIds);
+          setLoading(false);
+          setDogs(data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchDogs();
+    }
+  }, [selectedBreed, router]);
+
   const handleBreedClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
     breed: string
