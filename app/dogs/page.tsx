@@ -5,11 +5,14 @@ import BreedList from "../components/breeds/BreedList";
 import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
 import Searchbar from "../components/searchbar/Searchbar";
+import SelectMinMaxAge from "../components/selectage/SelectMinMaxAge";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [minAge, setMinAge] = useState<number>(0);
+  const [maxAge, setMaxAge] = useState<number>(25);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
@@ -32,22 +35,6 @@ export default function Dogs() {
     setSelectedBreeds((prev) => [...prev, breed]);
     setLoading(false);
   };
-
-  // const orderBreedsDesc = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   const sortedBreeds = [...breeds].sort((a, b) => b.localeCompare(a));
-  //   setBreeds(sortedBreeds);
-  //   setLoading(false);
-  // };
-
-  // const orderBreedsAsc = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   const sortedBreeds = [...breeds].sort((a, b) => a.localeCompare(b));
-  //   setBreeds(sortedBreeds);
-  //   setLoading(false);
-  // };
 
   useEffect(() => {
     if (selectedBreed) {
@@ -81,31 +68,110 @@ export default function Dogs() {
     }
   }, [selectedBreed, router]);
 
-  const handleBreedClick = async (
+  // // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
+  // const handleBreedClick = async (
+  //   e: React.MouseEvent<HTMLButtonElement>,
+  //   breed: string
+  // ) => {
+  //   e.preventDefault(); // Prevent default behavior if needed
+  //   setSelectedBreed(breed);
+  //   setView("dogs");
+  //   try {
+  //     const res = await fetch(`/api/dogs/${breed}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //     });
+  //     if (res.status === 401) {
+  //       router.push("/login");
+  //     }
+  //     if (!res.ok) {
+  //       setError("Failed to fetch dogs");
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     const data = await res.json();
+
+  //     const response = await fetch(`/api/dogs/${breed}`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(data.resultIds),
+  //       credentials: "include",
+  //     });
+
+  //     if (response.status === 401) {
+  //       router.push("/login");
+  //       return;
+  //     }
+  //     if (!response.ok) {
+  //       setError("Failed to fetch dogs by IDs");
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const dogsData = await response.json();
+  //     setLoading(false);
+  //     setView("dogs");
+  //     setDogs(dogsData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
+  const handleSubmitSearch = async (
     e: React.MouseEvent<HTMLButtonElement>,
-    breed: string
+    breed: string,
+    minAge?: number,
+    maxAge?: number
   ) => {
-    e.preventDefault(); // Prevent default behavior if needed
+    e.preventDefault();
     setSelectedBreed(breed);
     setView("dogs");
+    setLoading(true);
+
     try {
-      const res = await fetch(`/api/dogs/${breed}`, {
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (minAge !== undefined && minAge >= 0)
+        params.append("minAge", minAge.toString());
+      if (maxAge !== undefined && maxAge < Infinity)
+        params.append("maxAge", maxAge.toString());
+
+      // First API call - get dog IDs
+      const queryString = params.toString() ? `?${params.toString()}` : "";
+      const res = await fetch(`/api/dogs/${breed}${queryString}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
       });
+
       if (res.status === 401) {
+        setLoading(false);
         router.push("/login");
+        return;
       }
+
       if (!res.ok) {
+        setLoading(false);
         setError("Failed to fetch dogs");
         throw new Error("Network response was not ok");
       }
+
       const data = await res.json();
 
-      const response = await fetch(`/api/dogs/${breed}`, {
+      if (!data.resultIds || data.resultIds.length === 0) {
+        setLoading(false);
+        setDogs([]);
+        return;
+      }
+
+      // Second API call - get dog details by IDs
+      const response = await fetch(`/api/dogs/search`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,20 +181,26 @@ export default function Dogs() {
       });
 
       if (response.status === 401) {
+        setLoading(false);
         router.push("/login");
         return;
       }
+
       if (!response.ok) {
+        setLoading(false);
         setError("Failed to fetch dogs by IDs");
         throw new Error("Network response was not ok");
       }
 
       const dogsData = await response.json();
-      setLoading(false);
-      setView("dogs");
+
+      console.log("dogsData", dogsData);
       setDogs(dogsData);
     } catch (error) {
       console.error(error);
+      setError("An error occurred while fetching dogs");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,22 +255,31 @@ export default function Dogs() {
       ) : (
         <div className="flex flex-col gap-4 w-full">
           <div className="w-full max-w-md mx-auto">
-            {/* <Searchbar /> */}
             <Searchbar
               breeds={breeds}
               onSelectBreed={(breed) => {
-                // add to the breed list
                 addBreed(new MouseEvent("click") as any, breed);
-                // handleBreedClick(new MouseEvent("click") as any, breed);
               }}
+            />
+            <SelectMinMaxAge
+              minAge={minAge}
+              setMinAge={setMinAge}
+              maxAge={maxAge}
+              setMaxAge={setMaxAge}
             />
           </div>
           <BreedList
             selectedBreeds={selectedBreeds}
             handleBreedClick={addBreed}
-            // orderBreedsDesc={orderBreedsDesc}
-            // orderBreedsAsc={orderBreedsAsc}
           />
+          <button
+            onClick={(e) =>
+              handleSubmitSearch(e, selectedBreeds[0], minAge, maxAge)
+            }
+            className="bg-orange-400 text-white"
+          >
+            SUBMIT SEARCH
+          </button>
         </div>
       )}
     </div>

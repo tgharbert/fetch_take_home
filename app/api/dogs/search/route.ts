@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { breed: string } }
-) {
-  const { breed } = await params;
+export async function GET(req: NextRequest) {
+  const cookie = req.headers.get("cookie");
 
+  // Get all search parameters
   const searchParams = req.nextUrl.searchParams;
-
+  const breed = searchParams.get("breed");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
+  const sort = searchParams.get("sort");
 
-  const cookie = req.headers.get("cookie");
+  // Build query parameters for external API
+  const queryParams = new URLSearchParams();
+
+  if (breed) queryParams.append("breeds", breed);
+  if (minAge) queryParams.append("ageMin", minAge);
+  if (maxAge) queryParams.append("ageMax", maxAge);
+  if (sort) queryParams.append("sort", sort);
 
   if (!cookie) {
     return redirect("/login");
@@ -21,7 +26,7 @@ export async function GET(
   try {
     // Make the request to the external API
     const response = await fetch(
-      `${process.env.BASE_URL}/dogs/search?breeds=${breed}&ageMin=${minAge}&ageMax=${maxAge}`,
+      `${process.env.BASE_URL}/dogs/search?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {
@@ -31,18 +36,10 @@ export async function GET(
         credentials: "include",
       }
     );
+    console.log("Response from external API:", response);
 
-    // If the response isn't successful, throw an error
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: `Failed to fetch dogs for breed: ${breed}` },
-        { status: response.status }
-      );
-    }
-
-    // Parse and return the data
-    const data = await response.json();
-    return NextResponse.json(data);
+    // Rest of your code remains the same
+    // ...
   } catch (error) {
     console.error("Error fetching dogs:", error);
     return NextResponse.json(

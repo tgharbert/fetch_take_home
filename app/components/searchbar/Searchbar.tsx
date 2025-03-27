@@ -13,8 +13,6 @@ export default function Searchbar({ breeds, onSelectBreed }: SearchbarProps) {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  console.log("query", query);
-
   // Filter breeds based on query
   useEffect(() => {
     if (query.trim() === "") {
