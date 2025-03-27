@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
 import Searchbar from "../components/searchbar/Searchbar";
 import SelectMinMaxAge from "../components/selectage/SelectMinMaxAge";
+import Header from "../components/header/Header";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -204,7 +205,7 @@ export default function Dogs() {
   // THE CONDITIONAL RENDER IS A MESS HERE!!!!! -- FIX LATER
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <h1 className="text-black">FETCH TAKEHOME</h1>
+      <Header />
       {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
       {loading && (
         <div className="flex justify-center items-center">
