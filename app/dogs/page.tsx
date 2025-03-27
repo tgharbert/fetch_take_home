@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import BreedList from "../components/breeds/BreedList";
 import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
+import Searchbar from "../components/searchbar/Searchbar";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -172,12 +173,17 @@ export default function Dogs() {
       ) : view === "dogs" ? (
         <DogList dogs={dogs} breedViewSelector={breedViewSelector} />
       ) : (
-        <BreedList
-          breeds={breeds}
-          handleBreedClick={handleBreedClick}
-          orderBreedsDesc={orderBreedsDesc}
-          orderBreedsAsc={orderBreedsAsc}
-        />
+        <div className="flex flex-col gap-4 w-full">
+          <div className="w-full max-w-md mx-auto">
+            <Searchbar />
+          </div>
+          <BreedList
+            breeds={breeds}
+            handleBreedClick={handleBreedClick}
+            orderBreedsDesc={orderBreedsDesc}
+            orderBreedsAsc={orderBreedsAsc}
+          />
+        </div>
       )}
     </div>
   );
