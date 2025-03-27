@@ -1,24 +1,47 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import BreedList from "../components/dogs/BreedList";
+import React, { useEffect, useState, useCallback } from "react";
+import BreedList from "../components/breeds/BreedList";
 import { useRouter } from "next/navigation";
+import DogList from "../components/dogs/DogList";
 
 export default function Dogs() {
-  const [breeds, setBreeds] = useState([]);
+  const [breeds, setBreeds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
-  const [dogs, setDogs] = useState<Dog[] | null>(null);
+  const [dogs, setDogs] = useState<Dog[]>([]);
 
   const router = useRouter();
 
-  console.log("SELECTED BREED: ", selectedBreed);
+  const breedViewSelector = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setDogs([]);
+    setSelectedBreed(null);
+    setLoading(false);
+    setView("breeds");
+  };
+
+  const orderBreedsDesc = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const sortedBreeds = [...breeds].sort((a, b) => b.localeCompare(a));
+    setBreeds(sortedBreeds);
+    setLoading(false);
+  };
+
+  const orderBreedsAsc = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const sortedBreeds = [...breeds].sort((a, b) => a.localeCompare(b));
+    setBreeds(sortedBreeds);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (selectedBreed) {
-      console.log("FETCHING DOGS FOR BREED: ", selectedBreed);
       setLoading(true);
       const fetchDogs = async () => {
         try {
@@ -31,7 +54,6 @@ export default function Dogs() {
           });
           if (res.status === 401) {
             setLoading(false);
-
             router.push("/login");
           }
           if (!res.ok) {
@@ -39,11 +61,9 @@ export default function Dogs() {
             setError("Failed to fetch dogs");
             throw new Error("Network response was not ok");
           }
-          const data = await res.json();
+          // const data = await res.json();
           // send data.resultIds to post route for fetching dog
-          console.log("FETCHED DOGS: ", data.resultIds);
           setLoading(false);
-          setDogs(data);
         } catch (error) {
           console.error(error);
         }
@@ -75,7 +95,29 @@ export default function Dogs() {
         throw new Error("Network response was not ok");
       }
       const data = await res.json();
-      setDogs(data);
+
+      const response = await fetch(`/api/dogs/${breed}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data.resultIds),
+        credentials: "include",
+      });
+
+      if (response.status === 401) {
+        router.push("/login");
+        return;
+      }
+      if (!response.ok) {
+        setError("Failed to fetch dogs by IDs");
+        throw new Error("Network response was not ok");
+      }
+
+      const dogsData = await response.json();
+      setLoading(false);
+      setView("dogs");
+      setDogs(dogsData);
     } catch (error) {
       console.error(error);
     }
@@ -111,23 +153,31 @@ export default function Dogs() {
     setLoading(false);
   }, [cachedBreeds]);
 
+  // THE CONDITIONAL RENDER IS A MESS HERE!!!!! -- FIX LATER
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <h1 className="text-black">FETCH TAKEHOME</h1>
-      {/* ABSTRACT INTO SEPARATE COMPONENT LATER */}
+      {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
       {loading && (
         <div className="flex justify-center items-center">
           <p className="text-black">Loading...</p>
         </div>
       )}
       {error ? (
-        // ABSTRACT INTO SEPARATE COMPONENT LATER
+        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
         <div className="flex justify-center items-center">
           {/* FIX THIS ERROR MESSAGE/HANDLING LATER */}
           <p className="text-black">Error: {error}</p>
         </div>
+      ) : view === "dogs" ? (
+        <DogList dogs={dogs} breedViewSelector={breedViewSelector} />
       ) : (
-        <BreedList breeds={breeds} handleBreedClick={handleBreedClick} />
+        <BreedList
+          breeds={breeds}
+          handleBreedClick={handleBreedClick}
+          orderBreedsDesc={orderBreedsDesc}
+          orderBreedsAsc={orderBreedsAsc}
+        />
       )}
     </div>
   );

@@ -9,7 +9,6 @@ export async function GET(req: Request) {
 
     // if there is no cookie, redirect to login
     if (!cookie) {
-      console.log("no cookie");
       // redirect to login
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -21,7 +20,7 @@ export async function GET(req: Request) {
         "Content-Type": "application/json",
         cookie,
       },
-      // credentials: "include",
+      credentials: "include",
     });
     const data = await response.json();
     return NextResponse.json(data);
