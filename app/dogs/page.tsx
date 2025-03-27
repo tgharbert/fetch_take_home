@@ -222,17 +222,19 @@ export default function Dogs() {
         <DogList dogs={dogs} breedViewSelector={breedViewSelector} />
       ) : (
         <div className="flex flex-col gap-4 w-full">
-          <div className="w-full max-w-md mx-auto">
+          <div className="w-full max-w-md mx-auto px-4">
             <Searchbar
               breeds={breeds}
               onSelectBreed={(breed) => {
                 addBreed(new MouseEvent("click") as any, breed);
               }}
             />
-            <BreedList
-              selectedBreeds={selectedBreeds}
-              removeBreed={removeBreed}
-            />
+            <div className="mt-4 mb-4">
+              <BreedList
+                selectedBreeds={selectedBreeds}
+                removeBreed={removeBreed}
+              />
+            </div>
             <SelectMinMaxAge
               minAge={minAge}
               setMinAge={setMinAge}
