@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import BreedList from "../components/breeds/BreedList";
 import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
-import Searchbar from "../components/searchbar/Searchbar";
-import SelectMinMaxAge from "../components/selectage/SelectMinMaxAge";
 import Header from "../components/header/Header";
+import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -221,53 +219,33 @@ export default function Dogs() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
-      {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
-      {loading && (
-        <div className="flex justify-center items-center">
-          <p className="text-black">Loading...</p>
-        </div>
-      )}
-      {view === "dogs" ? (
-        <DogList
-          dogs={dogs}
-          breedViewSelector={breedViewSelector}
-          addToFavorites={addToFavorites}
-        />
-      ) : (
-        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
-        <div className="flex flex-col gap-4 w-full">
-          <div className="w-full max-w-md mx-auto px-4">
-            <Searchbar
-              breeds={breeds}
-              onSelectBreed={(breed) => {
-                addBreed(new MouseEvent("click") as any, breed);
-              }}
-            />
-            <div className="mt-4 mb-4">
-              <BreedList
-                selectedBreeds={selectedBreeds}
-                removeBreed={removeBreed}
-              />
-            </div>
-            <SelectMinMaxAge
-              minAge={minAge}
-              setMinAge={setMinAge}
-              maxAge={maxAge}
-              setMaxAge={setMaxAge}
-            />
+      <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
+        {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600 mb-4"></div>
+            <p className="text-gray-600 font-medium">Loading...</p>
           </div>
-          <div className="flex justify-center items-center">
-            <button
-              onClick={(e) =>
-                handleSubmitSearch(e, selectedBreeds[0], minAge, maxAge)
-              }
-              className="bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-opacity-50 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
-            >
-              SUBMIT SEARCH
-            </button>
-          </div>
-        </div>
-      )}
+        ) : view === "dogs" ? (
+          <DogList
+            dogs={dogs}
+            breedViewSelector={breedViewSelector}
+            addToFavorites={addToFavorites}
+          />
+        ) : (
+          <SearchDogsForm
+            breeds={breeds}
+            selectedBreeds={selectedBreeds}
+            addBreed={addBreed}
+            removeBreed={removeBreed}
+            minAge={minAge}
+            setMinAge={setMinAge}
+            maxAge={maxAge}
+            setMaxAge={setMaxAge}
+            handleSubmitSearch={handleSubmitSearch}
+          />
+        )}
+      </main>
     </div>
   );
 }
