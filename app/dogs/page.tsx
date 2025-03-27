@@ -8,6 +8,7 @@ import Searchbar from "../components/searchbar/Searchbar";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
+  const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
@@ -25,21 +26,28 @@ export default function Dogs() {
     setView("breeds");
   };
 
-  const orderBreedsDesc = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const addBreed = (e: React.MouseEvent<HTMLButtonElement>, breed: string) => {
     e.preventDefault();
     setLoading(true);
-    const sortedBreeds = [...breeds].sort((a, b) => b.localeCompare(a));
-    setBreeds(sortedBreeds);
+    setSelectedBreeds((prev) => [...prev, breed]);
     setLoading(false);
   };
 
-  const orderBreedsAsc = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    const sortedBreeds = [...breeds].sort((a, b) => a.localeCompare(b));
-    setBreeds(sortedBreeds);
-    setLoading(false);
-  };
+  // const orderBreedsDesc = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   const sortedBreeds = [...breeds].sort((a, b) => b.localeCompare(a));
+  //   setBreeds(sortedBreeds);
+  //   setLoading(false);
+  // };
+
+  // const orderBreedsAsc = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   const sortedBreeds = [...breeds].sort((a, b) => a.localeCompare(b));
+  //   setBreeds(sortedBreeds);
+  //   setLoading(false);
+  // };
 
   useEffect(() => {
     if (selectedBreed) {
@@ -175,13 +183,21 @@ export default function Dogs() {
       ) : (
         <div className="flex flex-col gap-4 w-full">
           <div className="w-full max-w-md mx-auto">
-            <Searchbar />
+            {/* <Searchbar /> */}
+            <Searchbar
+              breeds={breeds}
+              onSelectBreed={(breed) => {
+                // add to the breed list
+                addBreed(new MouseEvent("click") as any, breed);
+                // handleBreedClick(new MouseEvent("click") as any, breed);
+              }}
+            />
           </div>
           <BreedList
-            breeds={breeds}
-            handleBreedClick={handleBreedClick}
-            orderBreedsDesc={orderBreedsDesc}
-            orderBreedsAsc={orderBreedsAsc}
+            selectedBreeds={selectedBreeds}
+            handleBreedClick={addBreed}
+            // orderBreedsDesc={orderBreedsDesc}
+            // orderBreedsAsc={orderBreedsAsc}
           />
         </div>
       )}
