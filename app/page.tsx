@@ -5,8 +5,10 @@ export default async function Home() {
   const cookieStore = await cookies();
   const userSession = cookieStore.get("user-session");
 
+  // do everything here...
+
   if (userSession) {
-    redirect("/dogs");
+    redirect("/breeds");
   } else {
     redirect("/login");
   }

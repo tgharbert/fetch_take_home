@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const { name, email } = await req.json();
-  const baseUrl = "https://frontend-take-home-service.fetch.com";
+  // const baseUrl = "https://frontend-take-home-service.fetch.com";
 
-  const response = await fetch(`${baseUrl}/auth/login`, {
+  const response = await fetch(`${process.env.BASE_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
