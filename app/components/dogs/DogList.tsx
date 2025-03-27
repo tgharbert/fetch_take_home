@@ -3,9 +3,11 @@ import DogCard from "./DogCard";
 export default function DogList({
   dogs,
   breedViewSelector,
+  addToFavorites,
 }: {
   dogs: Dog[];
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  addToFavorites: (dogId: string) => void;
 }) {
   return (
     <div className="w-1/2">
@@ -34,7 +36,7 @@ export default function DogList({
       </div>
       <div className="grid grid-cols-2 gap-4">
         {dogs.map((dog: Dog) => (
-          <DogCard key={dog.id} dog={dog} />
+          <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
       </div>
     </div>

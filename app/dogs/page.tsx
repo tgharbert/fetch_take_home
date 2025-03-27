@@ -18,6 +18,16 @@ export default function Dogs() {
   const [view, setView] = useState<string>("breeds");
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  const addToFavorites = (dogId: string) => {
+    setFavorites((prev) => {
+      if (prev.includes(dogId)) {
+        return prev;
+      }
+      return [...prev, dogId];
+    });
+  };
 
   const router = useRouter();
 
@@ -33,7 +43,12 @@ export default function Dogs() {
   const addBreed = (e: React.MouseEvent<HTMLButtonElement>, breed: string) => {
     e.preventDefault();
     setLoading(true);
-    setSelectedBreeds((prev) => [...prev, breed]);
+    setSelectedBreeds((prev) => {
+      if (prev.includes(breed)) {
+        return prev;
+      }
+      return [...prev, breed];
+    });
     setLoading(false);
   };
 
@@ -212,15 +227,14 @@ export default function Dogs() {
           <p className="text-black">Loading...</p>
         </div>
       )}
-      {error ? (
-        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
-        <div className="flex justify-center items-center">
-          {/* FIX THIS ERROR MESSAGE/HANDLING LATER */}
-          <p className="text-black">Error: {error}</p>
-        </div>
-      ) : view === "dogs" ? (
-        <DogList dogs={dogs} breedViewSelector={breedViewSelector} />
+      {view === "dogs" ? (
+        <DogList
+          dogs={dogs}
+          breedViewSelector={breedViewSelector}
+          addToFavorites={addToFavorites}
+        />
       ) : (
+        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
         <div className="flex flex-col gap-4 w-full">
           <div className="w-full max-w-md mx-auto px-4">
             <Searchbar

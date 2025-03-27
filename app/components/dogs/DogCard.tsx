@@ -1,6 +1,12 @@
 import Image from "next/image";
 
-const DogCard = ({ dog }: { dog: Dog }) => {
+const DogCard = ({
+  dog,
+  addToFavorites,
+}: {
+  dog: Dog;
+  addToFavorites: (dogId: string) => void;
+}) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg mt-4 ">
       {/* Image container with fixed aspect ratio */}
@@ -13,7 +19,10 @@ const DogCard = ({ dog }: { dog: Dog }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {/* Favorite button positioned in top-right corner */}
-        <button className="absolute top-3 right-3 bg-white text-orange-500 hover:bg-orange-500 hover:text-white rounded-full p-2 shadow-md transition-colors duration-200">
+        <button
+          className="absolute top-3 right-3 bg-white text-orange-500 hover:bg-orange-500 hover:text-white rounded-full p-2 shadow-md transition-colors duration-200"
+          onClick={() => addToFavorites(dog.id)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
