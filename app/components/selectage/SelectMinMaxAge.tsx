@@ -34,7 +34,7 @@ export default function SelectMinMaxAge({
               onChange={(e) => setMinAge(Number(e.target.value))}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
             />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+            <span className="ml-2 -translate-y-1/2 text-gray-500 text-sm">
               yrs
             </span>
           </div>
@@ -58,7 +58,7 @@ export default function SelectMinMaxAge({
               onChange={(e) => setMaxAge(Number(e.target.value))}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
             />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+            <span className="ml-2 -translate-y-1/2 text-gray-500 text-sm">
               yrs
             </span>
           </div>
