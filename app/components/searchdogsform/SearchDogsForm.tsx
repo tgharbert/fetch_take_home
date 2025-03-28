@@ -60,7 +60,7 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
           }
           className={`bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-opacity-50 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out`}
         >
-          SUBMIT SEARCH
+          Submit Search
         </button>
       </div>
     </div>

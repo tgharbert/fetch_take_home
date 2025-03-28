@@ -119,8 +119,6 @@ export default function Dogs() {
       if (maxAge !== undefined && maxAge < Infinity)
         params.append("maxAge", maxAge.toString());
 
-      console.log(params.toString());
-
       // First API call - get dog IDs
       const queryString = params.toString() ? `?${params.toString()}` : "";
       const res = await fetch(`/api/dogs/search/${queryString}`, {
@@ -144,7 +142,6 @@ export default function Dogs() {
       }
 
       const data = await res.json();
-      console.log(data);
 
       if (!data.resultIds || data.resultIds.length === 0) {
         setLoading(false);
