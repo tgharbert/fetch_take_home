@@ -7,7 +7,7 @@ import SelectLocation from "../zip/SelectLocation";
 interface SearchDogsFormProps {
   breeds: string[];
   selectedBreeds: string[];
-  setUserZip: (e: React.ChangeEvent) => void;
+  setUserZip: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setUserRadius: (
     e: React.ChangeEvent<HTMLSelectElement>,
     radius: number

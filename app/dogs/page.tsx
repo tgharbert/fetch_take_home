@@ -21,7 +21,7 @@ export default function Dogs() {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   const setUserRadius = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.ChangeEvent<HTMLSelectElement>,
     radius: number
   ) => {
     e.preventDefault();
