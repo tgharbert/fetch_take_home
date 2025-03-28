@@ -2,10 +2,16 @@ import React from "react";
 import Searchbar from "../searchbar/Searchbar";
 import BreedList from "../breeds/BreedList";
 import SelectMinMaxAge from "../selectage/SelectMinMaxAge";
+import SelectLocation from "../zip/SelectLocation";
 
 interface SearchDogsFormProps {
   breeds: string[];
   selectedBreeds: string[];
+  setUserZip: (e: React.ChangeEvent) => void;
+  setUserRadius: (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    radius: number
+  ) => void;
   addBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   minAge: number;
@@ -23,6 +29,8 @@ interface SearchDogsFormProps {
 const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   breeds,
   selectedBreeds,
+  setUserZip,
+  setUserRadius,
   addBreed,
   removeBreed,
   minAge,
@@ -44,6 +52,12 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
           <BreedList
             selectedBreeds={selectedBreeds}
             removeBreed={removeBreed}
+          />
+        </div>
+        <div>
+          <SelectLocation
+            setUserZip={setUserZip}
+            setUserRadius={setUserRadius}
           />
         </div>
         <SelectMinMaxAge

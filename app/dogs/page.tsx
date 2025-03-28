@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
 import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
+import getBoundingBox from "../utils/geo";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -14,9 +15,47 @@ export default function Dogs() {
   const [maxAge, setMaxAge] = useState<number>(25);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
-  // const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
+  const [zip, setZip] = useState<string | null>(null);
+  const [radius, setRadius] = useState<number>(50);
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  const setUserRadius = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    radius: number
+  ) => {
+    e.preventDefault();
+    setRadius(radius);
+  };
+
+  console.log("radius", radius);
+  console.log("zip", zip);
+
+  // a function for a user to set the zip code
+  const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const zipCodeValue = e.target.value;
+
+    // If the field is empty, clear the ZIP without showing an error
+    if (!zipCodeValue) {
+      setZip(null);
+      setError(null);
+      return;
+    }
+
+    // Verify the zip code is valid
+    const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
+
+    if (isValidZip) {
+      setZip(zipCodeValue);
+      setError(null);
+    } else {
+      // Only set error if they've entered 5 or more digits
+      // This prevents showing errors while they're still typing
+      if (zipCodeValue.length >= 5) {
+        setError("Please enter a valid 5-digit ZIP code.");
+      }
+    }
+  };
 
   const addToFavorites = (dogId: string) => {
     setFavorites((prev) => {
@@ -33,7 +72,6 @@ export default function Dogs() {
     e.preventDefault();
     setLoading(true);
     setDogs([]);
-    // setSelectedBreed(null);
     setLoading(false);
     setView("breeds");
   };
@@ -60,38 +98,6 @@ export default function Dogs() {
     setLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (selectedBreed) {
-  //     setLoading(true);
-  //     const fetchDogs = async () => {
-  //       try {
-  //         const res = await fetch(`/api/dogs/${selectedBreed}`, {
-  //           method: "GET",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           credentials: "include",
-  //         });
-  //         if (res.status === 401) {
-  //           setLoading(false);
-  //           router.push("/login");
-  //         }
-  //         if (!res.ok) {
-  //           setLoading(false);
-  //           setError("Failed to fetch dogs");
-  //           throw new Error("Network response was not ok");
-  //         }
-  //         // const data = await res.json();
-  //         // send data.resultIds to post route for fetching dog
-  //         setLoading(false);
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     };
-  //     fetchDogs();
-  //   }
-  // }, [selectedBreed, router]);
-
   // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
   const handleSubmitSearch = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -100,7 +106,6 @@ export default function Dogs() {
     maxAge?: number
   ) => {
     e.preventDefault();
-    // setSelectedBreed(breed);
     setView("dogs");
     setLoading(true);
 
@@ -212,7 +217,6 @@ export default function Dogs() {
     setLoading(false);
   }, [cachedBreeds]);
 
-  // THE CONDITIONAL RENDER IS A MESS HERE!!!!! -- FIX LATER
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
@@ -232,6 +236,8 @@ export default function Dogs() {
         ) : (
           <SearchDogsForm
             breeds={breeds}
+            setUserZip={setUserZip}
+            setUserRadius={setUserRadius}
             selectedBreeds={selectedBreeds}
             addBreed={addBreed}
             removeBreed={removeBreed}
