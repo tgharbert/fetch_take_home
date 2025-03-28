@@ -53,12 +53,13 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
           setMaxAge={setMaxAge}
         />
       </div>
+      <div>{/* FIX -- GEO LOCATION STUFF HERE */}</div>
       <div className="flex justify-center items-center">
         <button
           onClick={(e) =>
             handleSubmitSearch(e, selectedBreeds[0], minAge, maxAge)
           }
-          className={`bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-opacity-50 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out`}
+          className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
         >
           Submit Search
         </button>

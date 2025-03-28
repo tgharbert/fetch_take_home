@@ -9,7 +9,9 @@ export default function DogList({
 }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 w-full mt-4 border border-gray-100">
-      <h2 className="font-bold text-2xl align-middle">Selected Breeds:</h2>
+      <h2 className="flex  justify-center font-semibold text-xl align-middle">
+        Selected Breeds:
+      </h2>
       <div className="mx-2"></div>
       <ul>
         {selectedBreeds.length === 0 ? (

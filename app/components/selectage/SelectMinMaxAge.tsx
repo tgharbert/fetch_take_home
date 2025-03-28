@@ -11,8 +11,8 @@ export default function SelectMinMaxAge({
 }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 w-full mt-4 border border-gray-100">
-      <h2 className="font-bold text-lg text-gray-800 mb-4 text-center">
-        Age Range
+      <h2 className="font-semibold text-lg text-gray-800 mb-4 text-center">
+        Age Range:
       </h2>
 
       <div className="grid grid-cols-2 gap-4">
@@ -32,7 +32,7 @@ export default function SelectMinMaxAge({
               max="25"
               value={minAge}
               onChange={(e) => setMinAge(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
               yrs
@@ -56,7 +56,7 @@ export default function SelectMinMaxAge({
               max="25"
               value={maxAge}
               onChange={(e) => setMaxAge(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all duration-200"
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
               yrs
@@ -66,6 +66,7 @@ export default function SelectMinMaxAge({
       </div>
 
       {/* Range Display */}
+      {/* FIX -- THIS ISN'T REFLECTING PROPERLY WHEN CHANGING BOTH MIN AND MAX */}
       <div className="mt-4 pt-3 border-t border-gray-100">
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div

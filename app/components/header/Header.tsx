@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-purple-500 to-purple-700 shadow-md w-full">
+    <header className="bg-purple-700 shadow-md w-full">
       <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Tagline */}
         <div className="flex flex-col items-center md:items-start mb-3 md:mb-0">
@@ -38,7 +38,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <button
             onClick={handleLogout}
-            className="bg-white text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-opacity-50"
+            className="bg-purple-700 text-white hover:bg-purple-400 px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-opacity-50"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

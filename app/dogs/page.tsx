@@ -14,7 +14,7 @@ export default function Dogs() {
   const [maxAge, setMaxAge] = useState<number>(25);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
-  const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
+  // const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -33,7 +33,7 @@ export default function Dogs() {
     e.preventDefault();
     setLoading(true);
     setDogs([]);
-    setSelectedBreed(null);
+    // setSelectedBreed(null);
     setLoading(false);
     setView("breeds");
   };
@@ -60,37 +60,37 @@ export default function Dogs() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (selectedBreed) {
-      setLoading(true);
-      const fetchDogs = async () => {
-        try {
-          const res = await fetch(`/api/dogs/${selectedBreed}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          });
-          if (res.status === 401) {
-            setLoading(false);
-            router.push("/login");
-          }
-          if (!res.ok) {
-            setLoading(false);
-            setError("Failed to fetch dogs");
-            throw new Error("Network response was not ok");
-          }
-          // const data = await res.json();
-          // send data.resultIds to post route for fetching dog
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchDogs();
-    }
-  }, [selectedBreed, router]);
+  // useEffect(() => {
+  //   if (selectedBreed) {
+  //     setLoading(true);
+  //     const fetchDogs = async () => {
+  //       try {
+  //         const res = await fetch(`/api/dogs/${selectedBreed}`, {
+  //           method: "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           credentials: "include",
+  //         });
+  //         if (res.status === 401) {
+  //           setLoading(false);
+  //           router.push("/login");
+  //         }
+  //         if (!res.ok) {
+  //           setLoading(false);
+  //           setError("Failed to fetch dogs");
+  //           throw new Error("Network response was not ok");
+  //         }
+  //         // const data = await res.json();
+  //         // send data.resultIds to post route for fetching dog
+  //         setLoading(false);
+  //       } catch (error) {
+  //         console.error(error);
+  //       }
+  //     };
+  //     fetchDogs();
+  //   }
+  // }, [selectedBreed, router]);
 
   // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
   const handleSubmitSearch = async (
@@ -100,7 +100,7 @@ export default function Dogs() {
     maxAge?: number
   ) => {
     e.preventDefault();
-    setSelectedBreed(breed);
+    // setSelectedBreed(breed);
     setView("dogs");
     setLoading(true);
 
@@ -220,7 +220,7 @@ export default function Dogs() {
         {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600 mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-700 mb-4"></div>
             <p className="text-gray-600 font-medium">Loading...</p>
           </div>
         ) : view === "dogs" ? (
