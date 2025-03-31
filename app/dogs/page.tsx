@@ -28,14 +28,12 @@ export default function Dogs() {
     setRadius(radius);
   };
 
-  console.log("radius", radius);
-  console.log("zip", zip);
+  console.log("zip: ", zip);
 
   // a function for a user to set the zip code
   const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
     const zipCodeValue = e.target.value;
 
-    // If the field is empty, clear the ZIP without showing an error
     if (!zipCodeValue) {
       setZip(null);
       setError(null);
@@ -46,11 +44,10 @@ export default function Dogs() {
     const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
 
     if (isValidZip) {
+      console.log("valid zip code");
       setZip(zipCodeValue);
       setError(null);
     } else {
-      // Only set error if they've entered 5 or more digits
-      // This prevents showing errors while they're still typing
       if (zipCodeValue.length >= 5) {
         setError("Please enter a valid 5-digit ZIP code.");
       }
@@ -106,6 +103,8 @@ export default function Dogs() {
   const handleSubmitSearch = async (
     e: React.MouseEvent<HTMLButtonElement>,
     breed: string,
+    zipCode: string | null,
+    radius: number,
     minAge?: number,
     maxAge?: number
   ) => {
@@ -127,6 +126,39 @@ export default function Dogs() {
         params.append("minAge", minAge.toString());
       if (maxAge !== undefined && maxAge < Infinity)
         params.append("maxAge", maxAge.toString());
+
+      // Add zip and radius if provided
+      // if (zipCode) {
+      //   params.append("zip", zipCode);
+      // }
+      // ensure that a zip is provided before adding radius
+      if (radius && zipCode) {
+        console.log("radius in the submission: ", radius);
+        // params.append("radius", radius.toString());
+
+        const geoRes = await fetch(`/api/geo/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([zipCode]),
+          credentials: "include",
+        });
+        if (geoRes.status === 401) {
+          setLoading(false);
+          router.push("/login");
+          return;
+        }
+        if (!geoRes.ok) {
+          setLoading(false);
+          setError("Failed to fetch location");
+          throw new Error("Network response was not ok");
+        }
+        const data = await geoRes.json();
+        const { lat, long } = data;
+        const boundingBox = getBoundingBox(lat, long, radius);
+        console.log("boundingBox: ", boundingBox);
+      }
 
       // First API call - get dog IDs
       const queryString = params.toString() ? `?${params.toString()}` : "";
@@ -244,6 +276,8 @@ export default function Dogs() {
             setUserRadius={setUserRadius}
             selectedBreeds={selectedBreeds}
             addBreed={addBreed}
+            zip={zip}
+            radius={radius}
             removeBreed={removeBreed}
             minAge={minAge}
             setMinAge={setMinAge}

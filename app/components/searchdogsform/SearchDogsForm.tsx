@@ -12,6 +12,8 @@ interface SearchDogsFormProps {
     e: React.ChangeEvent<HTMLSelectElement>,
     radius: number
   ) => void;
+  zip: string | null;
+  radius: number;
   addBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   minAge: number;
@@ -21,6 +23,8 @@ interface SearchDogsFormProps {
   handleSubmitSearch: (
     e: React.MouseEvent<HTMLButtonElement>,
     breed: string,
+    zip: string | null,
+    radius: number,
     minAge?: number,
     maxAge?: number
   ) => void;
@@ -32,6 +36,8 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   setUserZip,
   setUserRadius,
   addBreed,
+  zip,
+  radius,
   removeBreed,
   minAge,
   setMinAge,
@@ -71,7 +77,14 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
       <div className="flex justify-center items-center">
         <button
           onClick={(e) =>
-            handleSubmitSearch(e, selectedBreeds[0], minAge, maxAge)
+            handleSubmitSearch(
+              e,
+              selectedBreeds[0],
+              zip,
+              radius,
+              minAge,
+              maxAge
+            )
           }
           className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
         >

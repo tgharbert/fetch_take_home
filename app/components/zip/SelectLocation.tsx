@@ -2,7 +2,7 @@ export default function SelectLocation({
   setUserZip,
   setUserRadius,
 }: {
-  setUserZip: (e: React.ChangeEvent) => void;
+  setUserZip: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setUserRadius: (
     e: React.ChangeEvent<HTMLSelectElement>,
     radius: number
@@ -58,20 +58,20 @@ export default function SelectLocation({
             placeholder="Enter ZIP Code"
             onChange={setUserZip}
             className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400"
-            maxLength={10}
+            maxLength={5}
           />
         </div>
       </div>
 
       {/* Submit button centered below */}
-      <div className="flex justify-center mt-2">
+      {/* <div className="flex justify-center mt-2">
         <button
           type="submit"
           className="bg-gradient-to-r from-orange-400 to-orange-500 text-white font-medium py-2 px-6 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
         >
           Set Location
         </button>
-      </div>
+      </div> */}
       {/* </form> */}
     </div>
   );
