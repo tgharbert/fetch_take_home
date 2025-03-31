@@ -28,8 +28,6 @@ export default function Dogs() {
     setRadius(radius);
   };
 
-  console.log("zip: ", zip);
-
   // a function for a user to set the zip code
   const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
     const zipCodeValue = e.target.value;
@@ -44,7 +42,6 @@ export default function Dogs() {
     const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
 
     if (isValidZip) {
-      console.log("valid zip code");
       setZip(zipCodeValue);
       setError(null);
     } else {
@@ -136,7 +133,7 @@ export default function Dogs() {
         console.log("radius in the submission: ", radius);
         // params.append("radius", radius.toString());
 
-        const geoRes = await fetch(`/api/geo/`, {
+        const geoRes = await fetch(`/api/locations/${zip}/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -157,7 +154,11 @@ export default function Dogs() {
         const data = await geoRes.json();
         const { lat, long } = data;
         const boundingBox = getBoundingBox(lat, long, radius);
-        console.log("boundingBox: ", boundingBox);
+
+        // FIX -- NEED TO WRITE THE /GEO API ENDPOINT
+        // this will return the lat and long
+        // which I will feed to the bouding box func
+        // I will post tthe bouding box to the /locations/search endpoint from the TH
       }
 
       // First API call - get dog IDs
