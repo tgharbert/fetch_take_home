@@ -3,7 +3,8 @@ export default function getBoundingBox(
   lon: number,
   radius: number
 ): { minLat: number; maxLat: number; minLon: number; maxLon: number } {
-  const R = 6371; // Earth's radius in km
+  // FIX -- REPLACE KM WITH MILES - RADIUS OF EARTH
+  const R = 3963;
   const toDeg = (radians: number) => (radians * 180) / Math.PI;
 
   const latOffset = toDeg(radius / R);

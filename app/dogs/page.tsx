@@ -148,14 +148,48 @@ export default function Dogs() {
           setError("Failed to fetch location");
           throw new Error("Network response was not ok");
         }
-        const data = await geoRes.json();
-        console.log("data: ", data[0]);
-        const { latitude, longitude } = data[0];
-        console.log("lat and long from the geo API: ", latitude, longitude);
+        const geoResData = await geoRes.json();
+        // extract the lat and long data from the response
+        const { latitude, longitude } = geoResData[0];
         const boundingBox = getBoundingBox(latitude, longitude, radius);
 
         // send this bounding box to the external API
-        console.log("bounding box: ", boundingBox);
+        // console.log("bounding box: ", boundingBox);
+        const geoSearchBody = {
+          geoBoundingBox: {
+            bottom_left: {
+              lat: boundingBox.minLat,
+              lon: boundingBox.minLon,
+            },
+            top_right: {
+              lat: boundingBox.maxLat,
+              lon: boundingBox.maxLon,
+            },
+          },
+        };
+
+        const locSearch = await fetch(`/api/locations/search`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(geoSearchBody),
+          credentials: "include",
+        });
+        if (locSearch.status === 401) {
+          setLoading(false);
+          router.push("/login");
+          return;
+        }
+        if (!locSearch.ok) {
+          setLoading(false);
+          setError("Failed to fetch location");
+          throw new Error("Network response was not ok");
+        }
+        const locSearchData = await locSearch.json();
+
+        console.log("locSearchData: ", locSearchData);
+        // FIX -- NEED TO POST THIS TO THE DOGS API
 
         // FIX -- NEED TO WRITE THE /GEO API ENDPOINT
         // this will return the lat and long
@@ -259,6 +293,11 @@ export default function Dogs() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
+      {error && (
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-red-500 font-medium">{error}</p>
+        </div>
+      )}
       <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
         {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
         {loading ? (
