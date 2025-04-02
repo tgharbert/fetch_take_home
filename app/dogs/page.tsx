@@ -130,9 +130,6 @@ export default function Dogs() {
       // }
       // ensure that a zip is provided before adding radius
       if (radius && zipCode) {
-        console.log("radius in the submission: ", radius);
-        // params.append("radius", radius.toString());
-
         const geoRes = await fetch(`/api/locations/${zip}/`, {
           method: "POST",
           headers: {
@@ -152,8 +149,13 @@ export default function Dogs() {
           throw new Error("Network response was not ok");
         }
         const data = await geoRes.json();
-        const { lat, long } = data;
-        const boundingBox = getBoundingBox(lat, long, radius);
+        console.log("data: ", data[0]);
+        const { latitude, longitude } = data[0];
+        console.log("lat and long from the geo API: ", latitude, longitude);
+        const boundingBox = getBoundingBox(latitude, longitude, radius);
+
+        // send this bounding box to the external API
+        console.log("bounding box: ", boundingBox);
 
         // FIX -- NEED TO WRITE THE /GEO API ENDPOINT
         // this will return the lat and long
