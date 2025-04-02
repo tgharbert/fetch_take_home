@@ -10,6 +10,7 @@ import getBoundingBox from "../utils/geo";
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
+  const [zips, setZips] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [minAge, setMinAge] = useState<number>(0);
   const [maxAge, setMaxAge] = useState<number>(25);
@@ -92,6 +93,10 @@ export default function Dogs() {
     setLoading(false);
   };
 
+  const getZipsFromLocations = (locations: Location[]) => {
+    const zips = locations.map((location) => location.zip_code);
+    return zips;
+  };
   // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
   // FIX -- NEED TO ADD THE ZIP TO THE API CALL, THIS WILL RETURN LAT AND LONG FOR THAT LOCATION
   // THEN I WILL USE THAT TO PERFORM CALC WITH THE RADIUS TO GET A RANGE OF LONG AND LATS
@@ -124,10 +129,6 @@ export default function Dogs() {
       if (maxAge !== undefined && maxAge < Infinity)
         params.append("maxAge", maxAge.toString());
 
-      // Add zip and radius if provided
-      // if (zipCode) {
-      //   params.append("zip", zipCode);
-      // }
       // ensure that a zip is provided before adding radius
       if (radius && zipCode) {
         const geoRes = await fetch(`/api/locations/${zip}/`, {
@@ -154,7 +155,6 @@ export default function Dogs() {
         const boundingBox = getBoundingBox(latitude, longitude, radius);
 
         // send this bounding box to the external API
-        // console.log("bounding box: ", boundingBox);
         const geoSearchBody = {
           geoBoundingBox: {
             bottom_left: {
@@ -166,6 +166,8 @@ export default function Dogs() {
               lon: boundingBox.maxLon,
             },
           },
+          // max size to get all the zips
+          size: 10000,
         };
 
         const locSearch = await fetch(`/api/locations/search`, {
@@ -186,19 +188,21 @@ export default function Dogs() {
           setError("Failed to fetch location");
           throw new Error("Network response was not ok");
         }
+
         const locSearchData = await locSearch.json();
+        // FIX THIS
+        const zipCodesFromGeobox = getZipsFromLocations(locSearchData.results);
 
-        console.log("locSearchData: ", locSearchData);
-        // FIX -- NEED TO POST THIS TO THE DOGS API
-
-        // FIX -- NEED TO WRITE THE /GEO API ENDPOINT
-        // this will return the lat and long
-        // which I will feed to the bouding box func
-        // I will post tthe bouding box to the /locations/search endpoint from the TH
+        if (zipCodesFromGeobox && zipCodesFromGeobox.length > 0) {
+          zipCodesFromGeobox.forEach((zipCode) => {
+            params.append("zipCodes", zipCode);
+          });
+        }
       }
 
       // First API call - get dog IDs
       const queryString = params.toString() ? `?${params.toString()}` : "";
+
       const res = await fetch(`/api/dogs/search/${queryString}`, {
         method: "GET",
         headers: {
@@ -250,7 +254,6 @@ export default function Dogs() {
       }
 
       const dogsData = await response.json();
-
       setDogs(dogsData);
     } catch (error) {
       console.error(error);

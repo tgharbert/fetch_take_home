@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
   const sort = searchParams.get("sort");
+  const zips = searchParams.getAll("zipCodes");
 
   // Build query parameters for external API
   const queryParams = new URLSearchParams();
@@ -22,6 +23,12 @@ export async function GET(req: NextRequest) {
   if (breeds && breeds.length > 0) {
     breeds.forEach((breed) => {
       queryParams.append("breeds", breed);
+    });
+  }
+
+  if (zips && zips.length > 0) {
+    zips.forEach((zip) => {
+      queryParams.append("zipCodes", zip);
     });
   }
 
