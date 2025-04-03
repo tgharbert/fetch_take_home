@@ -6,7 +6,6 @@ export default function useDogSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
-  // const [view, setView] = useState<string>("breeds");
   const router = useRouter();
 
   const fetchLocationByZip = async (zipCode: string) => {
@@ -80,6 +79,7 @@ export default function useDogSearch() {
 
   const fetchDogIds = async (params: URLSearchParams) => {
     const queryString = params.toString();
+    console.log("queryString", queryString);
     const response = await fetch(`../../api/dogs/search?${queryString}`, {
       method: "GET",
       headers: {
@@ -136,7 +136,6 @@ export default function useDogSearch() {
     minAge: number,
     maxAge: number
   ) => {
-    // setView("dogs");
     setLoading(true);
     setError(null);
     e.preventDefault();
@@ -167,6 +166,8 @@ export default function useDogSearch() {
         });
       }
 
+      console.log("params", params.toString());
+
       const dogIds = await fetchDogIds(params);
       if (!dogIds) return;
       const dogsData = await fetchDogDetails(dogIds);
@@ -174,7 +175,6 @@ export default function useDogSearch() {
       setDogs(dogsData);
       setLoading(false);
       setError(null);
-      // setView("dogs");
     } catch (error) {
       setLoading(false);
       setError("Failed to fetch dogs");
@@ -187,7 +187,6 @@ export default function useDogSearch() {
     dogs,
     loading,
     error,
-    // view,
     searchDogs,
   };
 }

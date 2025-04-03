@@ -45,6 +45,8 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   setMaxAge,
   handleSubmitSearch,
 }) => {
+  // console.log("selected breeds: ", selectedBreeds);
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="w-full max-w-md mx-auto px-4">
@@ -62,6 +64,8 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
         </div>
         <div>
           <SelectLocation
+            radius={radius}
+            zip={zip}
             setUserZip={setUserZip}
             setUserRadius={setUserRadius}
           />

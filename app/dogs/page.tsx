@@ -15,8 +15,11 @@ export default function Dogs() {
   const [maxAge, setMaxAge] = useState<number>(25);
   const [view, setView] = useState<string>("breeds");
   const [zip, setZip] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(50);
+  const [radius, setRadius] = useState<number>(25);
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  // FIX -- REMOVE THIS LOG
+  console.log("favorites: ", favorites);
 
   // custom hook to fetch dogs
   const { dogs, loading, error, searchDogs } = useDogSearch();
