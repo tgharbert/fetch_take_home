@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import DogCard from "./DogCard";
 
 export default function DogList({
@@ -9,6 +10,14 @@ export default function DogList({
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
   addToFavorites: (dogId: string) => void;
 }) {
+  // FIX -- need to be able to reverse the order of the dogs
+
+  const sortedDogs = useMemo(() => {
+    return [...dogs].sort((a, b) =>
+      a.breed.localeCompare(b.breed, "en", { sensitivity: "base" })
+    );
+  }, [dogs]);
+
   return (
     <div className="w-1/2">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
@@ -35,7 +44,7 @@ export default function DogList({
         </h2>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        {dogs.map((dog: Dog) => (
+        {sortedDogs.map((dog: Dog) => (
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
       </div>

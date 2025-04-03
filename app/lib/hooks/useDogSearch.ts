@@ -79,7 +79,6 @@ export default function useDogSearch() {
 
   const fetchDogIds = async (params: URLSearchParams) => {
     const queryString = params.toString();
-    console.log("queryString", queryString);
     const response = await fetch(`../../api/dogs/search?${queryString}`, {
       method: "GET",
       headers: {
@@ -165,8 +164,6 @@ export default function useDogSearch() {
           params.append("zipCodes", zip);
         });
       }
-
-      console.log("params", params.toString());
 
       const dogIds = await fetchDogIds(params);
       if (!dogIds) return;
