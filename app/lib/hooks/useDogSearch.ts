@@ -6,7 +6,7 @@ export default function useDogSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
-  const [view, setView] = useState<string>("breeds");
+  // const [view, setView] = useState<string>("breeds");
   const router = useRouter();
 
   const fetchLocationByZip = async (zipCode: string) => {
@@ -34,7 +34,6 @@ export default function useDogSearch() {
   };
 
   const fetchZipCodesInRadius = async (coords: Coordinates, radius: number) => {
-    // console.log("Coordinates:", lat, lon);
     const boundingBox = getBoundingBox(coords.lat, coords.lon, radius);
 
     const geoSearchBody = {
@@ -137,7 +136,7 @@ export default function useDogSearch() {
     minAge: number,
     maxAge: number
   ) => {
-    setView("dogs");
+    // setView("dogs");
     setLoading(true);
     setError(null);
     e.preventDefault();
@@ -175,7 +174,7 @@ export default function useDogSearch() {
       setDogs(dogsData);
       setLoading(false);
       setError(null);
-      setView("dogs");
+      // setView("dogs");
     } catch (error) {
       setLoading(false);
       setError("Failed to fetch dogs");
@@ -188,7 +187,7 @@ export default function useDogSearch() {
     dogs,
     loading,
     error,
-    view,
+    // view,
     searchDogs,
   };
 }

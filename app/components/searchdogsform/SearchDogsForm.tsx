@@ -22,11 +22,11 @@ interface SearchDogsFormProps {
   setMaxAge: (age: number) => void;
   handleSubmitSearch: (
     e: React.MouseEvent<HTMLButtonElement>,
-    breed: string,
-    zip: string | null,
+    breeds: string[],
+    zipCode: string | null,
     radius: number,
-    minAge?: number,
-    maxAge?: number
+    minAge: number,
+    maxAge: number
   ) => void;
 }
 
