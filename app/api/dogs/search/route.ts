@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
       queryParams.append("zipCodes", zip);
     });
   }
+  // console.log("Query Params:", queryParams.toString());
 
   if (!cookie) {
     return redirect("/login");

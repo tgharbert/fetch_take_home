@@ -5,21 +5,36 @@ import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
 import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
-import getBoundingBox from "../utils/geo";
+// import getBoundingBox from "../utils/geo";
+import useDogSearch from "../lib/hooks/useDogSearch";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
-  const [zips, setZips] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  // const [zips, setZips] = useState<string[]>([]);
+  // const [error, setError] = useState<string | null>(null);
   const [minAge, setMinAge] = useState<number>(0);
   const [maxAge, setMaxAge] = useState<number>(25);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<string>("breeds");
+  // const [loading, setLoading] = useState(true);
+  // const [view, setView] = useState<string>("breeds");
   const [zip, setZip] = useState<string | null>(null);
   const [radius, setRadius] = useState<number>(50);
-  const [dogs, setDogs] = useState<Dog[]>([]);
+  // const [dogs, setDogs] = useState<Dog[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  const { dogs, loading, error, view, searchDogs } = useDogSearch();
+  // const router = useRouter();
+
+  const handleSubmitSearch = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    breeds: string[],
+    zipCode: string | null,
+    radius: number,
+    minAge: number,
+    maxAge: number
+  ) => {
+    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge);
+  };
 
   const setUserRadius = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -35,7 +50,7 @@ export default function Dogs() {
 
     if (!zipCodeValue) {
       setZip(null);
-      setError(null);
+      // setError(null);
       return;
     }
 
@@ -44,11 +59,11 @@ export default function Dogs() {
 
     if (isValidZip) {
       setZip(zipCodeValue);
-      setError(null);
-    } else {
-      if (zipCodeValue.length >= 5) {
-        setError("Please enter a valid 5-digit ZIP code.");
-      }
+      // setError(null);
+      // } else {
+      // if (zipCodeValue.length >= 5) {
+      //   setError("Please enter a valid 5-digit ZIP code.");
+      // }
     }
   };
 
@@ -65,22 +80,22 @@ export default function Dogs() {
 
   const breedViewSelector = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setDogs([]);
-    setLoading(false);
-    setView("breeds");
+    // setLoading(true);
+    // setDogs([]);
+    // setLoading(false);
+    // setView("breeds");
   };
 
   const addBreed = (e: React.MouseEvent<HTMLButtonElement>, breed: string) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     setSelectedBreeds((prev) => {
       if (prev.includes(breed)) {
         return prev;
       }
       return [...prev, breed];
     });
-    setLoading(false);
+    // setLoading(false);
   };
 
   const removeBreed = (
@@ -88,180 +103,176 @@ export default function Dogs() {
     breed: string
   ) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     setSelectedBreeds((prev) => prev.filter((b) => b !== breed));
-    setLoading(false);
+    // setLoading(false);
   };
 
-  const getZipsFromLocations = (locations: Location[]) => {
-    const zips = locations.map((location) => location.zip_code);
-    return zips;
-  };
-  // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
-  // FIX -- NEED TO ADD THE ZIP TO THE API CALL, THIS WILL RETURN LAT AND LONG FOR THAT LOCATION
-  // THEN I WILL USE THAT TO PERFORM CALC WITH THE RADIUS TO GET A RANGE OF LONG AND LATS
-  // I WILL SEND THOSE AS PART OF A GEO BOUNDING BOX AND THAT WILL RETRIEVE ALL ZIPS
-  // THEN I WILL ADD THE RETURNED ZIPS TO THE PARAMS OF THE DOG API CALL
-  const handleSubmitSearch = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    breed: string,
-    zipCode: string | null,
-    radius: number,
-    minAge?: number,
-    maxAge?: number
-  ) => {
-    e.preventDefault();
-    setView("dogs");
-    setLoading(true);
+  // const getZipsFromLocations = (locations: Location[]) => {
+  //   const zips = locations.map((location) => location.zip_code);
+  //   return zips;
+  // };
 
-    try {
-      // Build query parameters
-      const params = new URLSearchParams();
+  // const handleSubmitSearch = async (
+  //   e: React.MouseEvent<HTMLButtonElement>,
+  //   breed: string,
+  //   zipCode: string | null,
+  //   radius: number,
+  //   minAge?: number,
+  //   maxAge?: number
+  // ) => {
+  //   e.preventDefault();
+  //   setView("dogs");
+  //   setLoading(true);
 
-      // Add multiple breeds as repeated query parameters
-      if (selectedBreeds && selectedBreeds.length > 0) {
-        selectedBreeds.forEach((breed) => {
-          params.append("breeds", breed);
-        });
-      }
-      if (minAge !== undefined && minAge >= 0)
-        params.append("minAge", minAge.toString());
-      if (maxAge !== undefined && maxAge < Infinity)
-        params.append("maxAge", maxAge.toString());
+  //   try {
+  //     // Build query parameters
+  //     const params = new URLSearchParams();
 
-      // ensure that a zip is provided before adding radius
-      if (radius && zipCode) {
-        const geoRes = await fetch(`/api/locations/${zip}/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify([zipCode]),
-          credentials: "include",
-        });
-        if (geoRes.status === 401) {
-          setLoading(false);
-          router.push("/login");
-          return;
-        }
-        if (!geoRes.ok) {
-          setLoading(false);
-          setError("Failed to fetch location");
-          throw new Error("Network response was not ok");
-        }
-        const geoResData = await geoRes.json();
-        // extract the lat and long data from the response
-        const { latitude, longitude } = geoResData[0];
-        const boundingBox = getBoundingBox(latitude, longitude, radius);
+  //     // Add multiple breeds as repeated query parameters
+  //     if (selectedBreeds && selectedBreeds.length > 0) {
+  //       selectedBreeds.forEach((breed) => {
+  //         params.append("breeds", breed);
+  //       });
+  //     }
+  //     if (minAge !== undefined && minAge >= 0)
+  //       params.append("minAge", minAge.toString());
+  //     if (maxAge !== undefined && maxAge < Infinity)
+  //       params.append("maxAge", maxAge.toString());
 
-        // send this bounding box to the external API
-        const geoSearchBody = {
-          geoBoundingBox: {
-            bottom_left: {
-              lat: boundingBox.minLat,
-              lon: boundingBox.minLon,
-            },
-            top_right: {
-              lat: boundingBox.maxLat,
-              lon: boundingBox.maxLon,
-            },
-          },
-          // max size to get all the zips
-          size: 10000,
-        };
+  //     // ensure that a zip is provided before adding radius
+  //     if (radius && zipCode) {
+  //       const geoRes = await fetch(`/api/locations/${zip}/`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify([zipCode]),
+  //         credentials: "include",
+  //       });
+  //       if (geoRes.status === 401) {
+  //         setLoading(false);
+  //         router.push("/login");
+  //         return;
+  //       }
+  //       if (!geoRes.ok) {
+  //         setLoading(false);
+  //         setError("Failed to fetch location");
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       const geoResData = await geoRes.json();
+  //       // extract the lat and long data from the response
+  //       const { latitude, longitude } = geoResData[0];
+  //       const boundingBox = getBoundingBox(latitude, longitude, radius);
 
-        const locSearch = await fetch(`/api/locations/search`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(geoSearchBody),
-          credentials: "include",
-        });
-        if (locSearch.status === 401) {
-          setLoading(false);
-          router.push("/login");
-          return;
-        }
-        if (!locSearch.ok) {
-          setLoading(false);
-          setError("Failed to fetch location");
-          throw new Error("Network response was not ok");
-        }
+  //       // send this bounding box to the external API
+  //       const geoSearchBody = {
+  //         geoBoundingBox: {
+  //           bottom_left: {
+  //             lat: boundingBox.minLat,
+  //             lon: boundingBox.minLon,
+  //           },
+  //           top_right: {
+  //             lat: boundingBox.maxLat,
+  //             lon: boundingBox.maxLon,
+  //           },
+  //         },
+  //         // max size to get all the zips
+  //         size: 10000,
+  //       };
 
-        const locSearchData = await locSearch.json();
-        // FIX THIS
-        const zipCodesFromGeobox = getZipsFromLocations(locSearchData.results);
+  //       const locSearch = await fetch(`/api/locations/search`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(geoSearchBody),
+  //         credentials: "include",
+  //       });
+  //       if (locSearch.status === 401) {
+  //         setLoading(false);
+  //         router.push("/login");
+  //         return;
+  //       }
+  //       if (!locSearch.ok) {
+  //         setLoading(false);
+  //         setError("Failed to fetch location");
+  //         throw new Error("Network response was not ok");
+  //       }
 
-        if (zipCodesFromGeobox && zipCodesFromGeobox.length > 0) {
-          zipCodesFromGeobox.forEach((zipCode) => {
-            params.append("zipCodes", zipCode);
-          });
-        }
-      }
+  //       const locSearchData = await locSearch.json();
+  //       // FIX THIS
+  //       const zipCodesFromGeobox = getZipsFromLocations(locSearchData.results);
 
-      // First API call - get dog IDs
-      const queryString = params.toString() ? `?${params.toString()}` : "";
+  //       if (zipCodesFromGeobox && zipCodesFromGeobox.length > 0) {
+  //         zipCodesFromGeobox.forEach((zipCode) => {
+  //           params.append("zipCodes", zipCode);
+  //         });
+  //       }
+  //     }
 
-      const res = await fetch(`/api/dogs/search/${queryString}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+  //     // First API call - get dog IDs
+  //     const queryString = params.toString() ? `?${params.toString()}` : "";
 
-      if (res.status === 401) {
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
+  //     const res = await fetch(`/api/dogs/search/${queryString}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //     });
 
-      if (!res.ok) {
-        setLoading(false);
-        setError("Failed to fetch dogs");
-        throw new Error("Network response was not ok");
-      }
+  //     if (res.status === 401) {
+  //       setLoading(false);
+  //       router.push("/login");
+  //       return;
+  //     }
 
-      const data = await res.json();
+  //     if (!res.ok) {
+  //       setLoading(false);
+  //       setError("Failed to fetch dogs");
+  //       throw new Error("Network response was not ok");
+  //     }
 
-      if (!data.resultIds || data.resultIds.length === 0) {
-        setLoading(false);
-        setDogs([]);
-        return;
-      }
+  //     const data = await res.json();
 
-      // Second API call - get dog details by IDs
-      const response = await fetch(`/api/dogs/search`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data.resultIds),
-        credentials: "include",
-      });
+  //     if (!data.resultIds || data.resultIds.length === 0) {
+  //       setLoading(false);
+  //       setDogs([]);
+  //       return;
+  //     }
 
-      if (response.status === 401) {
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
+  //     // Second API call - get dog details by IDs
+  //     const response = await fetch(`/api/dogs/search`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(data.resultIds),
+  //       credentials: "include",
+  //     });
 
-      if (!response.ok) {
-        setLoading(false);
-        setError("Failed to fetch dogs by IDs");
-        throw new Error("Network response was not ok");
-      }
+  //     if (response.status === 401) {
+  //       setLoading(false);
+  //       router.push("/login");
+  //       return;
+  //     }
 
-      const dogsData = await response.json();
-      setDogs(dogsData);
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while fetching dogs");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (!response.ok) {
+  //       setLoading(false);
+  //       setError("Failed to fetch dogs by IDs");
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const dogsData = await response.json();
+  //     setDogs(dogsData);
+  //   } catch (error) {
+  //     console.error(error);
+  //     setError("An error occurred while fetching dogs");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const cachedBreeds = useCallback(async () => {
     try {
@@ -277,12 +288,12 @@ export default function Dogs() {
       }
       if (!res.ok) {
         // FIX THE ERROR MESSAGE/HANDLING LATER
-        setError("Failed to fetch breeds");
+        // setError("Failed to fetch breeds");
         throw new Error("Network response was not ok");
       }
       const data = await res.json();
       setBreeds(data);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -290,7 +301,7 @@ export default function Dogs() {
 
   useEffect(() => {
     cachedBreeds();
-    setLoading(false);
+    // setLoading(false);
   }, [cachedBreeds]);
 
   return (
