@@ -2,10 +2,18 @@ import React from "react";
 import Searchbar from "../searchbar/Searchbar";
 import BreedList from "../breeds/BreedList";
 import SelectMinMaxAge from "../selectage/SelectMinMaxAge";
+import SelectLocation from "../zip/SelectLocation";
 
 interface SearchDogsFormProps {
   breeds: string[];
   selectedBreeds: string[];
+  setUserZip: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setUserRadius: (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    radius: number
+  ) => void;
+  zip: string | null;
+  radius: number;
   addBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   minAge: number;
@@ -14,16 +22,22 @@ interface SearchDogsFormProps {
   setMaxAge: (age: number) => void;
   handleSubmitSearch: (
     e: React.MouseEvent<HTMLButtonElement>,
-    breed: string,
-    minAge?: number,
-    maxAge?: number
+    breeds: string[],
+    zipCode: string | null,
+    radius: number,
+    minAge: number,
+    maxAge: number
   ) => void;
 }
 
 const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   breeds,
   selectedBreeds,
+  setUserZip,
+  setUserRadius,
   addBreed,
+  zip,
+  radius,
   removeBreed,
   minAge,
   setMinAge,
@@ -46,6 +60,12 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
             removeBreed={removeBreed}
           />
         </div>
+        <div>
+          <SelectLocation
+            setUserZip={setUserZip}
+            setUserRadius={setUserRadius}
+          />
+        </div>
         <SelectMinMaxAge
           minAge={minAge}
           setMinAge={setMinAge}
@@ -53,14 +73,22 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
           setMaxAge={setMaxAge}
         />
       </div>
+      <div>{/* FIX -- GEO LOCATION STUFF HERE */}</div>
       <div className="flex justify-center items-center">
         <button
           onClick={(e) =>
-            handleSubmitSearch(e, selectedBreeds[0], minAge, maxAge)
+            handleSubmitSearch(
+              e,
+              selectedBreeds[0],
+              zip,
+              radius,
+              minAge,
+              maxAge
+            )
           }
-          className={`bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-opacity-50 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out`}
+          className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
         >
-          SUBMIT SEARCH
+          Submit Search
         </button>
       </div>
     </div>

@@ -5,18 +5,58 @@ import { useRouter } from "next/navigation";
 import DogList from "../components/dogs/DogList";
 import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
+import useDogSearch from "../lib/hooks/useDogSearch";
+import Loading from "../components/loading/Loading";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [minAge, setMinAge] = useState<number>(0);
   const [maxAge, setMaxAge] = useState<number>(25);
-  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<string>("breeds");
-  const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
-  const [dogs, setDogs] = useState<Dog[]>([]);
+  const [zip, setZip] = useState<string | null>(null);
+  const [radius, setRadius] = useState<number>(50);
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  // custom hook to fetch dogs
+  const { dogs, loading, error, searchDogs } = useDogSearch();
+
+  const handleSubmitSearch = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    breeds: string[],
+    zipCode: string | null,
+    radius: number,
+    minAge: number,
+    maxAge: number
+  ) => {
+    setView("dogs");
+    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge);
+  };
+
+  const setUserRadius = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    radius: number
+  ) => {
+    e.preventDefault();
+    setRadius(radius);
+  };
+
+  // a function for a user to set the zip code
+  const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const zipCodeValue = e.target.value;
+
+    if (!zipCodeValue) {
+      setZip(null);
+      return;
+    }
+
+    // Verify the zip code is valid
+    const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
+
+    if (isValidZip) {
+      setZip(zipCodeValue);
+    }
+  };
 
   const addToFavorites = (dogId: string) => {
     setFavorites((prev) => {
@@ -31,23 +71,17 @@ export default function Dogs() {
 
   const breedViewSelector = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setDogs([]);
-    setSelectedBreed(null);
-    setLoading(false);
     setView("breeds");
   };
 
   const addBreed = (e: React.MouseEvent<HTMLButtonElement>, breed: string) => {
     e.preventDefault();
-    setLoading(true);
     setSelectedBreeds((prev) => {
       if (prev.includes(breed)) {
         return prev;
       }
       return [...prev, breed];
     });
-    setLoading(false);
   };
 
   const removeBreed = (
@@ -55,134 +89,7 @@ export default function Dogs() {
     breed: string
   ) => {
     e.preventDefault();
-    setLoading(true);
     setSelectedBreeds((prev) => prev.filter((b) => b !== breed));
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (selectedBreed) {
-      setLoading(true);
-      const fetchDogs = async () => {
-        try {
-          const res = await fetch(`/api/dogs/${selectedBreed}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          });
-          if (res.status === 401) {
-            setLoading(false);
-            router.push("/login");
-          }
-          if (!res.ok) {
-            setLoading(false);
-            setError("Failed to fetch dogs");
-            throw new Error("Network response was not ok");
-          }
-          // const data = await res.json();
-          // send data.resultIds to post route for fetching dog
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchDogs();
-    }
-  }, [selectedBreed, router]);
-
-  // FIX -- THIS FUNCTION IS A MESS -- WILL BE THE MAIN SUBMIT SEARCH FUNC -- FIX LATER
-  const handleSubmitSearch = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    breed: string,
-    minAge?: number,
-    maxAge?: number
-  ) => {
-    e.preventDefault();
-    setSelectedBreed(breed);
-    setView("dogs");
-    setLoading(true);
-
-    try {
-      // Build query parameters
-      const params = new URLSearchParams();
-
-      // Add multiple breeds as repeated query parameters
-      if (selectedBreeds && selectedBreeds.length > 0) {
-        selectedBreeds.forEach((breed) => {
-          params.append("breeds", breed);
-        });
-      }
-      if (minAge !== undefined && minAge >= 0)
-        params.append("minAge", minAge.toString());
-      if (maxAge !== undefined && maxAge < Infinity)
-        params.append("maxAge", maxAge.toString());
-
-      console.log(params.toString());
-
-      // First API call - get dog IDs
-      const queryString = params.toString() ? `?${params.toString()}` : "";
-      const res = await fetch(`/api/dogs/search/${queryString}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-
-      if (res.status === 401) {
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
-
-      if (!res.ok) {
-        setLoading(false);
-        setError("Failed to fetch dogs");
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await res.json();
-      console.log(data);
-
-      if (!data.resultIds || data.resultIds.length === 0) {
-        setLoading(false);
-        setDogs([]);
-        return;
-      }
-
-      // Second API call - get dog details by IDs
-      const response = await fetch(`/api/dogs/search`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data.resultIds),
-        credentials: "include",
-      });
-
-      if (response.status === 401) {
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
-
-      if (!response.ok) {
-        setLoading(false);
-        setError("Failed to fetch dogs by IDs");
-        throw new Error("Network response was not ok");
-      }
-
-      const dogsData = await response.json();
-
-      setDogs(dogsData);
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while fetching dogs");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const cachedBreeds = useCallback(async () => {
@@ -198,13 +105,10 @@ export default function Dogs() {
         router.push("/login");
       }
       if (!res.ok) {
-        // FIX THE ERROR MESSAGE/HANDLING LATER
-        setError("Failed to fetch breeds");
         throw new Error("Network response was not ok");
       }
       const data = await res.json();
       setBreeds(data);
-      setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -212,20 +116,20 @@ export default function Dogs() {
 
   useEffect(() => {
     cachedBreeds();
-    setLoading(false);
   }, [cachedBreeds]);
 
-  // THE CONDITIONAL RENDER IS A MESS HERE!!!!! -- FIX LATER
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
+      {error && (
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-red-500 font-medium">{error}</p>
+        </div>
+      )}
       <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
         {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600 mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading...</p>
-          </div>
+          <Loading />
         ) : view === "dogs" ? (
           <DogList
             dogs={dogs}
@@ -235,8 +139,12 @@ export default function Dogs() {
         ) : (
           <SearchDogsForm
             breeds={breeds}
+            setUserZip={setUserZip}
+            setUserRadius={setUserRadius}
             selectedBreeds={selectedBreeds}
             addBreed={addBreed}
+            zip={zip}
+            radius={radius}
             removeBreed={removeBreed}
             minAge={minAge}
             setMinAge={setMinAge}
