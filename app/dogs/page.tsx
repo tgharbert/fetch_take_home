@@ -54,9 +54,7 @@ export default function Dogs() {
     }
 
     // Verify the zip code is valid
-    const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
-
-    if (isValidZip) {
+    if (/^\d*$/.test(zipCodeValue)) {
       setZip(zipCodeValue);
     }
   };
