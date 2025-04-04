@@ -14,29 +14,11 @@ export default function DogList({
   setIsAlphaSort: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isAlpha: boolean;
 }) {
-  // FIX -- need to be able to reverse the order of the dogs
-  // is alpha state
-  // const [reverseAlpha, setReverseAlpha] = useState(false);
-
   const sortedDogs = useMemo(() => {
     return [...dogs].sort((a, b) =>
       a.breed.localeCompare(b.breed, "en", { sensitivity: "base" })
     );
   }, [dogs]);
-
-  // const reorderBreeds = () => {
-  //   setReverseAlpha((prev) => !prev);
-  //   if (reverseAlpha) {
-  //     sortedDogs.sort((a, b) =>
-  //       a.breed.localeCompare(b.breed, "en", { sensitivity: "base" })
-  //     );
-  //   }
-  //   if (!reverseAlpha) {
-  //     sortedDogs.sort((a, b) =>
-  //       b.breed.localeCompare(a.breed, "en", { sensitivity: "base" })
-  //     );
-  //   }
-  // };
 
   return (
     <div className="w-1/2">
@@ -62,8 +44,30 @@ export default function DogList({
         <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0">
           Available Dogs
         </h2>
-        <button onClick={setIsAlphaSort}>
-          {isAlpha ? "reverse" : "normal"}
+        <button
+          onClick={(e) => setIsAlphaSort(e)}
+          className="flex items-center bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:-translate-y-0.5 ml-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
+        >
+          <span className="mr-1.5">Sort</span>
+          {isAlpha ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 text-orange-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 text-orange-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 15a1 1 0 01-1-1v-5.586l-1.293 1.293a1 1 0 01-1.414-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L15 8.414V14a1 1 0 01-1 1z" />
+            </svg>
+          )}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-4">
