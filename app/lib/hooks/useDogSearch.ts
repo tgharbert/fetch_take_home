@@ -133,7 +133,8 @@ export default function useDogSearch() {
     zipCode: string | null,
     radius: number | null,
     minAge: number,
-    maxAge: number
+    maxAge: number,
+    isAlpha: boolean
   ) => {
     setLoading(true);
     setError(null);
@@ -148,6 +149,12 @@ export default function useDogSearch() {
       }
       params.append("minAge", minAge.toString());
       params.append("maxAge", maxAge.toString());
+
+      if (isAlpha) {
+        params.append("sort", "breed:asc");
+      } else {
+        params.append("sort", "breed:desc");
+      }
 
       if (zipCode && radius) {
         const location: Location = await fetchLocationByZip(zipCode);

@@ -5,18 +5,38 @@ export default function DogList({
   dogs,
   breedViewSelector,
   addToFavorites,
+  setIsAlphaSort,
+  isAlpha,
 }: {
   dogs: Dog[];
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
   addToFavorites: (dogId: string) => void;
+  setIsAlphaSort: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isAlpha: boolean;
 }) {
   // FIX -- need to be able to reverse the order of the dogs
+  // is alpha state
+  // const [reverseAlpha, setReverseAlpha] = useState(false);
 
   const sortedDogs = useMemo(() => {
     return [...dogs].sort((a, b) =>
       a.breed.localeCompare(b.breed, "en", { sensitivity: "base" })
     );
   }, [dogs]);
+
+  // const reorderBreeds = () => {
+  //   setReverseAlpha((prev) => !prev);
+  //   if (reverseAlpha) {
+  //     sortedDogs.sort((a, b) =>
+  //       a.breed.localeCompare(b.breed, "en", { sensitivity: "base" })
+  //     );
+  //   }
+  //   if (!reverseAlpha) {
+  //     sortedDogs.sort((a, b) =>
+  //       b.breed.localeCompare(a.breed, "en", { sensitivity: "base" })
+  //     );
+  //   }
+  // };
 
   return (
     <div className="w-1/2">
@@ -42,6 +62,9 @@ export default function DogList({
         <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0">
           Available Dogs
         </h2>
+        <button onClick={setIsAlphaSort}>
+          {isAlpha ? "reverse" : "normal"}
+        </button>
       </div>
       <div className="grid grid-cols-2 gap-4">
         {sortedDogs.map((dog: Dog) => (

@@ -15,13 +15,14 @@ export default function Dogs() {
   const [maxAge, setMaxAge] = useState<number>(25);
   const [view, setView] = useState<string>("breeds");
   const [zip, setZip] = useState<string | null>(null);
+  const [isAlpha, setIsAlpha] = useState<boolean>(true);
   const [radius, setRadius] = useState<number>(25);
   const [favorites, setFavorites] = useState<string[]>([]);
 
   // FIX -- REMOVE THIS LOG
   console.log("favorites: ", favorites);
 
-  // custom hook to fetch dogs
+  // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
   const { dogs, loading, error, searchDogs } = useDogSearch();
 
   const handleSubmitSearch = (
@@ -30,10 +31,11 @@ export default function Dogs() {
     zipCode: string | null,
     radius: number,
     minAge: number,
-    maxAge: number
+    maxAge: number,
+    isAlpha: boolean
   ) => {
     setView("dogs");
-    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge);
+    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, isAlpha);
   };
 
   const setUserRadius = (
@@ -44,15 +46,23 @@ export default function Dogs() {
     setRadius(radius);
   };
 
+  const setIsAlphaSort = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // establishing a new var avoids state race conditions when user clicks the button
+    setIsAlpha((prev) => {
+      const newOrder = !prev;
+      searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, newOrder);
+      return newOrder;
+    });
+  };
+
   // a function for a user to set the zip code
   const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
     const zipCodeValue = e.target.value;
-
     if (!zipCodeValue) {
       setZip(null);
       return;
     }
-
     // Verify the zip code is valid
     if (/^\d*$/.test(zipCodeValue)) {
       setZip(zipCodeValue);
@@ -136,6 +146,8 @@ export default function Dogs() {
             dogs={dogs}
             breedViewSelector={breedViewSelector}
             addToFavorites={addToFavorites}
+            setIsAlphaSort={setIsAlphaSort}
+            isAlpha={isAlpha}
           />
         ) : (
           <SearchDogsForm
@@ -151,6 +163,7 @@ export default function Dogs() {
             setMinAge={setMinAge}
             maxAge={maxAge}
             setMaxAge={setMaxAge}
+            isAlpha={isAlpha}
             handleSubmitSearch={handleSubmitSearch}
           />
         )}
