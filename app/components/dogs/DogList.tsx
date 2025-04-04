@@ -7,12 +7,14 @@ export default function DogList({
   addToFavorites,
   setIsAlphaSort,
   isAlpha,
+  handleNextPage,
 }: {
   dogs: Dog[];
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
   addToFavorites: (dogId: string) => void;
   setIsAlphaSort: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isAlpha: boolean;
+  handleNextPage: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const sortedDogs = useMemo(() => {
     return [...dogs].sort((a, b) =>
@@ -75,6 +77,9 @@ export default function DogList({
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
       </div>
+      <button onClick={(e) => handleNextPage(e)} className="mt-6">
+        Next
+      </button>
     </div>
   );
 }

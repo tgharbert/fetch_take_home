@@ -20,10 +20,11 @@ export default function Dogs() {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   // FIX -- REMOVE THIS LOG
-  console.log("favorites: ", favorites);
+  // console.log("favorites: ", favorites);
 
   // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
-  const { dogs, loading, error, searchDogs } = useDogSearch();
+  const { dogs, loading, error, searchDogs, nextPage, fetchNextPage } =
+    useDogSearch();
 
   const handleSubmitSearch = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -44,6 +45,11 @@ export default function Dogs() {
   ) => {
     e.preventDefault();
     setRadius(radius);
+  };
+
+  const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetchNextPage();
   };
 
   const setIsAlphaSort = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -129,10 +135,12 @@ export default function Dogs() {
     cachedBreeds();
   }, [cachedBreeds]);
 
+  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
       {error && (
+        // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
         <div className="flex flex-col items-center justify-center">
           <p className="text-red-500 font-medium">{error}</p>
         </div>
@@ -148,6 +156,7 @@ export default function Dogs() {
             addToFavorites={addToFavorites}
             setIsAlphaSort={setIsAlphaSort}
             isAlpha={isAlpha}
+            handleNextPage={handleNextPage}
           />
         ) : (
           <SearchDogsForm

@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
     const dogIds = await req.json();
 
     const cookie = req.headers.get("cookie");
-
     if (!cookie) {
       return redirect("/login");
     }

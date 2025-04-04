@@ -6,6 +6,8 @@ export default function useDogSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
+  const [prevPage, setPrevPage] = useState<string | null>(null);
+  const [nextPage, setNextPage] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchLocationByZip = async (zipCode: string) => {
@@ -99,7 +101,7 @@ export default function useDogSearch() {
       setError("No dogs found");
       return;
     }
-    return data.resultIds;
+    return data;
   };
 
   const fetchDogDetails = async (dogIds: string[]) => {
@@ -125,6 +127,49 @@ export default function useDogSearch() {
       return;
     }
     return dogsData;
+  };
+
+  const fetchNextPage = async () => {
+    if (!nextPage) return;
+
+    setLoading(true);
+    try {
+      // Use the stored nextPage value
+      const response = await fetch(`../../api/dogs/search?${nextPage}`, {
+        credentials: "include",
+      });
+
+      if (response.status === 401) {
+        router.push("/login");
+        return;
+      }
+
+      const data = await response.json();
+
+      console.log("nextPageData", data.next);
+
+      // Update pagination tokens
+      if (data.next) {
+        setNextPage(data.next);
+      } else {
+        setNextPage(null);
+      }
+
+      if (data.prev) {
+        setPrevPage(data.prev);
+      } else {
+        setPrevPage(null);
+      }
+
+      // Fetch dog details
+      const dogsData = await fetchDogDetails(data.resultIds);
+      if (dogsData) setDogs(dogsData);
+    } catch (error) {
+      setError("Failed to fetch next page");
+      console.error("Pagination error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const searchDogs = async (
@@ -172,9 +217,18 @@ export default function useDogSearch() {
         });
       }
 
-      const dogIds = await fetchDogIds(params);
-      if (!dogIds) return;
-      const dogsData = await fetchDogDetails(dogIds);
+      const dogIdsReturn = await fetchDogIds(params);
+      console.log(dogIdsReturn);
+
+      if (dogIdsReturn.next) {
+        setNextPage(dogIdsReturn.next);
+      }
+      if (dogIdsReturn.prev) {
+        setPrevPage(dogIdsReturn.prev);
+      }
+
+      if (!dogIdsReturn) return;
+      const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
       if (!dogsData) return;
       setDogs(dogsData);
       setLoading(false);
@@ -192,5 +246,9 @@ export default function useDogSearch() {
     loading,
     error,
     searchDogs,
+    prevPage,
+    nextPage,
+    fetchNextPage,
+    // fetchPrevPage,
   };
 }
