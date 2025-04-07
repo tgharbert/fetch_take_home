@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import getBoundingBox from "@/app/utils/geo";
 
@@ -6,8 +6,17 @@ export default function useDogSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
-  // const [view, setView] = useState<string>("breeds");
+  const [from, setFrom] = useState<number>(0);
   const router = useRouter();
+
+  const searchParamsRef = useRef({
+    selectedBreeds: [] as string[],
+    zipCode: null as string | null,
+    radius: 25 as number | null,
+    minAge: 0,
+    maxAge: 25,
+    isAlpha: true,
+  });
 
   const fetchLocationByZip = async (zipCode: string) => {
     const response = await fetch(`../../api/locations/${zipCode}`, {
@@ -78,6 +87,21 @@ export default function useDogSearch() {
     return zipCodes;
   };
 
+  const resetPage = () => {
+    setFrom(0);
+    setDogs([]);
+    setLoading(false);
+    setError(null);
+    searchParamsRef.current = {
+      selectedBreeds: [] as string[],
+      zipCode: null as string | null,
+      radius: 25 as number | null,
+      minAge: 0,
+      maxAge: 25,
+      isAlpha: true,
+    };
+  };
+
   const fetchDogIds = async (params: URLSearchParams) => {
     const queryString = params.toString();
     const response = await fetch(`../../api/dogs/search?${queryString}`, {
@@ -100,7 +124,7 @@ export default function useDogSearch() {
       setError("No dogs found");
       return;
     }
-    return data.resultIds;
+    return data;
   };
 
   const fetchDogDetails = async (dogIds: string[]) => {
@@ -128,28 +152,86 @@ export default function useDogSearch() {
     return dogsData;
   };
 
-  const searchDogs = async (
-    e: React.FormEvent,
-    selectedBreeds: string[],
-    zipCode: string | null,
-    radius: number | null,
-    minAge: number,
-    maxAge: number
-  ) => {
-    // setView("dogs");
+  const fetchPrevPage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    if (e) e.preventDefault();
+    const searchSize = 25;
     setLoading(true);
     setError(null);
-    e.preventDefault();
-
     try {
+      const { selectedBreeds, zipCode, radius, minAge, maxAge, isAlpha } =
+        searchParamsRef.current;
       const params = new URLSearchParams();
       if (selectedBreeds && selectedBreeds.length > 0) {
         selectedBreeds.forEach((breed) => {
           params.append("breeds", breed);
         });
       }
+      let prevFrom = from - 25;
+      if (from - searchSize < 0) {
+        prevFrom = 0;
+      }
       params.append("minAge", minAge.toString());
       params.append("maxAge", maxAge.toString());
+      params.append("from", prevFrom.toString());
+      if (isAlpha) {
+        params.append("sort", "breed:asc");
+      } else {
+        params.append("sort", "breed:desc");
+      }
+      if (zipCode && radius) {
+        const location: Location = await fetchLocationByZip(zipCode);
+        if (!location) return;
+        const coords: Coordinates = {
+          lat: location.latitude,
+          lon: location.longitude,
+        };
+        const zips = await fetchZipCodesInRadius(coords, radius);
+        if (!zips) return;
+        zips.forEach((zip: string) => {
+          params.append("zipCodes", zip);
+        });
+      }
+      const dogIdsReturn = await fetchDogIds(params);
+      if (!dogIdsReturn) return;
+      const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
+      if (!dogsData) return;
+      setDogs(dogsData);
+      setLoading(false);
+      setError(null);
+    } catch (error) {
+      setLoading(false);
+      setError("Failed to fetch dogs");
+      console.error("Error fetching dogs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNextPage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    if (e) e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { selectedBreeds, zipCode, radius, minAge, maxAge, isAlpha } =
+        searchParamsRef.current;
+
+      const params = new URLSearchParams();
+      if (selectedBreeds && selectedBreeds.length > 0) {
+        selectedBreeds.forEach((breed) => {
+          params.append("breeds", breed);
+        });
+      }
+      const nextFrom = from + 25;
+      params.append("minAge", minAge.toString());
+      params.append("maxAge", maxAge.toString());
+      params.append("from", nextFrom.toString());
+
+      if (isAlpha) {
+        params.append("sort", "breed:asc");
+      } else {
+        params.append("sort", "breed:desc");
+      }
 
       if (zipCode && radius) {
         const location: Location = await fetchLocationByZip(zipCode);
@@ -167,14 +249,87 @@ export default function useDogSearch() {
         });
       }
 
-      const dogIds = await fetchDogIds(params);
-      if (!dogIds) return;
-      const dogsData = await fetchDogDetails(dogIds);
+      const dogIdsReturn = await fetchDogIds(params);
+
+      if (!dogIdsReturn) return;
+      const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
       if (!dogsData) return;
       setDogs(dogsData);
       setLoading(false);
       setError(null);
-      // setView("dogs");
+    } catch (error) {
+      setLoading(false);
+      setError("Failed to fetch dogs");
+      console.error("Error fetching dogs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const searchDogs = async (
+    e: React.FormEvent,
+    selectedBreeds: string[],
+    zipCode: string | null,
+    radius: number | null,
+    minAge: number,
+    maxAge: number,
+    isAlpha: boolean
+  ) => {
+    setLoading(true);
+    setError(null);
+    e.preventDefault();
+
+    searchParamsRef.current = {
+      selectedBreeds,
+      zipCode,
+      radius,
+      minAge,
+      maxAge,
+      isAlpha,
+    };
+
+    try {
+      const params = new URLSearchParams();
+      if (selectedBreeds && selectedBreeds.length > 0) {
+        selectedBreeds.forEach((breed) => {
+          params.append("breeds", breed);
+        });
+      }
+      params.append("minAge", minAge.toString());
+      params.append("maxAge", maxAge.toString());
+      params.append("from", from.toString());
+
+      if (isAlpha) {
+        params.append("sort", "breed:asc");
+      } else {
+        params.append("sort", "breed:desc");
+      }
+
+      if (zipCode && radius) {
+        const location: Location = await fetchLocationByZip(zipCode);
+        if (!location) return;
+
+        const coords: Coordinates = {
+          lat: location.latitude,
+          lon: location.longitude,
+        };
+        const zips = await fetchZipCodesInRadius(coords, radius);
+        if (!zips) return;
+
+        zips.forEach((zip: string) => {
+          params.append("zipCodes", zip);
+        });
+      }
+
+      const dogIdsReturn = await fetchDogIds(params);
+
+      if (!dogIdsReturn) return;
+      const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
+      if (!dogsData) return;
+      setDogs(dogsData);
+      // setFrom((prev) => prev + size);
+      setLoading(false);
+      setError(null);
     } catch (error) {
       setLoading(false);
       setError("Failed to fetch dogs");
@@ -187,7 +342,9 @@ export default function useDogSearch() {
     dogs,
     loading,
     error,
-    // view,
     searchDogs,
+    fetchNextPage,
+    fetchPrevPage,
+    resetPage,
   };
 }

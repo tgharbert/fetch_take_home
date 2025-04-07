@@ -1,7 +1,7 @@
 import React from "react";
-import Searchbar from "../searchbar/Searchbar";
-import BreedList from "../breeds/BreedList";
-import SelectMinMaxAge from "../selectage/SelectMinMaxAge";
+import Searchbar from "./searchbar/Searchbar";
+import BreedList from "./breeds/BreedList";
+import SelectMinMaxAge from "./selectage/SelectMinMaxAge";
 import SelectLocation from "../zip/SelectLocation";
 
 interface SearchDogsFormProps {
@@ -19,6 +19,7 @@ interface SearchDogsFormProps {
   minAge: number;
   setMinAge: (age: number) => void;
   maxAge: number;
+  isAlpha: boolean;
   setMaxAge: (age: number) => void;
   handleSubmitSearch: (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -26,7 +27,8 @@ interface SearchDogsFormProps {
     zipCode: string | null,
     radius: number,
     minAge: number,
-    maxAge: number
+    maxAge: number,
+    isAlpha: boolean
   ) => void;
 }
 
@@ -42,6 +44,7 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   minAge,
   setMinAge,
   maxAge,
+  isAlpha,
   setMaxAge,
   handleSubmitSearch,
 }) => {
@@ -62,6 +65,8 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
         </div>
         <div>
           <SelectLocation
+            radius={radius}
+            zip={zip}
             setUserZip={setUserZip}
             setUserRadius={setUserRadius}
           />
@@ -79,11 +84,12 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
           onClick={(e) =>
             handleSubmitSearch(
               e,
-              selectedBreeds[0],
+              selectedBreeds,
               zip,
               radius,
               minAge,
-              maxAge
+              maxAge,
+              isAlpha
             )
           }
           className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"

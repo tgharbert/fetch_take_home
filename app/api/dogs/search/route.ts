@@ -11,13 +11,37 @@ export async function GET(req: NextRequest) {
   const maxAge = searchParams.get("maxAge");
   const sort = searchParams.get("sort");
   const zips = searchParams.getAll("zipCodes");
+  const isAlpha = searchParams.get("isAlpha") === "true";
+  const size = searchParams.get("size");
+  const from = searchParams.get("from");
 
   // Build query parameters for external API
   const queryParams = new URLSearchParams();
 
   if (minAge) queryParams.append("ageMin", minAge);
   if (maxAge) queryParams.append("ageMax", maxAge);
-  if (sort) queryParams.append("sort", sort);
+  // if (sort) queryParams.append("sort", sort);
+  if (size) queryParams.append("size", size);
+  if (from) queryParams.append("from", from);
+
+  // Handle sorting properly
+  if (sort) {
+    // Use explicit sort parameter if provided
+    queryParams.append("sort", sort);
+  } else if (isAlpha !== null) {
+    // Otherwise use isAlpha to determine sort direction
+    queryParams.append("sort", isAlpha ? "breed:asc" : "breed:desc");
+  } else {
+    // ALWAYS provide a default sort to ensure consistent pagination
+    queryParams.append("sort", "breed:asc");
+  }
+  console.log("queryParams", queryParams.toString());
+
+  // if (isAlpha) {
+  //   queryParams.append("isAlpha", "sort=breed:asc");
+  // } else {
+  //   queryParams.append("isAlpha", "sort=breed:desc");
+  // }
 
   // Add all breeds to the query
   if (breeds && breeds.length > 0) {

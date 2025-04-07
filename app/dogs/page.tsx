@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import DogList from "../components/dogs/DogList";
+import DogList from "../components/dogslist/DogList";
 import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
 import useDogSearch from "../lib/hooks/useDogSearch";
@@ -15,11 +15,44 @@ export default function Dogs() {
   const [maxAge, setMaxAge] = useState<number>(25);
   const [view, setView] = useState<string>("breeds");
   const [zip, setZip] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(50);
+  const [isAlpha, setIsAlpha] = useState<boolean>(true);
+  const [radius, setRadius] = useState<number>(25);
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  // custom hook to fetch dogs
-  const { dogs, loading, error, searchDogs } = useDogSearch();
+  const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetchNextPage(e);
+  };
+
+  const handlePrevPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetchPrevPage(e);
+  };
+
+  // FIX -- REMOVE THIS LOG
+  console.log("favorites: ", favorites);
+
+  const submitFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log("favorites: ", favorites);
+
+    // this will send the body (an array of dog Ids) to the /api/match
+    // that will return a single ID
+
+    // I WANT TO REDIRECT TO /MATCH/[ID] AFTER THIS
+    // there I will grab the dog with that ID and display information on it
+  };
+
+  // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
+  const {
+    dogs,
+    loading,
+    error,
+    searchDogs,
+    fetchNextPage,
+    fetchPrevPage,
+    resetPage,
+  } = useDogSearch();
 
   const handleSubmitSearch = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -27,10 +60,11 @@ export default function Dogs() {
     zipCode: string | null,
     radius: number,
     minAge: number,
-    maxAge: number
+    maxAge: number,
+    isAlpha: boolean
   ) => {
     setView("dogs");
-    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge);
+    searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, isAlpha);
   };
 
   const setUserRadius = (
@@ -41,19 +75,24 @@ export default function Dogs() {
     setRadius(radius);
   };
 
-  // a function for a user to set the zip code
+  const setIsAlphaSort = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // establishing a new var avoids state race conditions when user clicks the button
+    setIsAlpha((prev) => {
+      const newOrder = !prev;
+      searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, newOrder);
+      return newOrder;
+    });
+  };
+
   const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
     const zipCodeValue = e.target.value;
-
     if (!zipCodeValue) {
       setZip(null);
       return;
     }
-
     // Verify the zip code is valid
-    const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCodeValue);
-
-    if (isValidZip) {
+    if (/^\d*$/.test(zipCodeValue)) {
       setZip(zipCodeValue);
     }
   };
@@ -71,6 +110,7 @@ export default function Dogs() {
 
   const breedViewSelector = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    resetPage();
     setView("breeds");
   };
 
@@ -118,16 +158,17 @@ export default function Dogs() {
     cachedBreeds();
   }, [cachedBreeds]);
 
+  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN??
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
       {error && (
+        // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
         <div className="flex flex-col items-center justify-center">
           <p className="text-red-500 font-medium">{error}</p>
         </div>
       )}
       <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
-        {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
         {loading ? (
           <Loading />
         ) : view === "dogs" ? (
@@ -135,6 +176,10 @@ export default function Dogs() {
             dogs={dogs}
             breedViewSelector={breedViewSelector}
             addToFavorites={addToFavorites}
+            setIsAlphaSort={setIsAlphaSort}
+            isAlpha={isAlpha}
+            handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
           />
         ) : (
           <SearchDogsForm
@@ -150,6 +195,7 @@ export default function Dogs() {
             setMinAge={setMinAge}
             maxAge={maxAge}
             setMaxAge={setMaxAge}
+            isAlpha={isAlpha}
             handleSubmitSearch={handleSubmitSearch}
           />
         )}
