@@ -6,11 +6,7 @@ export default function useDogSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
-
   const [from, setFrom] = useState<number>(0);
-  // const [size, setSize] = useState<number>(25);
-  // const [prevPage, setPrevPage] = useState<string | null>(null);
-  // const [nextPage, setNextPage] = useState<string | null>(null);
   const router = useRouter();
 
   const searchParamsRef = useRef({
@@ -91,6 +87,21 @@ export default function useDogSearch() {
     return zipCodes;
   };
 
+  const resetPage = () => {
+    setFrom(0);
+    setDogs([]);
+    setLoading(false);
+    setError(null);
+    searchParamsRef.current = {
+      selectedBreeds: [] as string[],
+      zipCode: null as string | null,
+      radius: 25 as number | null,
+      minAge: 0,
+      maxAge: 25,
+      isAlpha: true,
+    };
+  };
+
   const fetchDogIds = async (params: URLSearchParams) => {
     const queryString = params.toString();
     const response = await fetch(`../../api/dogs/search?${queryString}`, {
@@ -143,9 +154,10 @@ export default function useDogSearch() {
 
   const fetchNextPage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) e.preventDefault();
-    console.log("Fetching next page");
 
-    // const nextFrom = from + size;
+    const searchSize = 25;
+    setFrom((prev) => prev + searchSize);
+
     setLoading(true);
     setError(null);
 
@@ -159,11 +171,10 @@ export default function useDogSearch() {
           params.append("breeds", breed);
         });
       }
+      const nextFrom = from + 25;
       params.append("minAge", minAge.toString());
       params.append("maxAge", maxAge.toString());
-      // console.log("from", from);
-
-      params.append("from", from.toString());
+      params.append("from", nextFrom.toString());
 
       if (isAlpha) {
         params.append("sort", "breed:asc");
@@ -189,19 +200,10 @@ export default function useDogSearch() {
 
       const dogIdsReturn = await fetchDogIds(params);
 
-      // if (dogIdsReturn.next) {
-      //   setNextPage(dogIdsReturn.next);
-      // }
-      // if (dogIdsReturn.prev) {
-      //   setPrevPage(dogIdsReturn.prev);
-      // }
-
       if (!dogIdsReturn) return;
       const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
       if (!dogsData) return;
       setDogs(dogsData);
-      const searchSize = 25;
-      setFrom((prev) => prev + searchSize);
       setLoading(false);
       setError(null);
     } catch (error) {
@@ -300,5 +302,6 @@ export default function useDogSearch() {
     error,
     searchDogs,
     fetchNextPage,
+    resetPage,
   };
 }

@@ -77,9 +77,12 @@ export default function DogList({
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
       </div>
-      <button onClick={(e) => handleNextPage(e)} className="mt-6">
-        Next
-      </button>
+      {dogs.length === 25 ? (
+        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
+        <button onClick={(e) => handleNextPage(e)} className="mt-6">
+          Next
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -17,7 +17,6 @@ export default function Dogs() {
   const [zip, setZip] = useState<string | null>(null);
   const [isAlpha, setIsAlpha] = useState<boolean>(true);
   const [radius, setRadius] = useState<number>(25);
-  // const [from, setFrom] = useState<number>(0);
   const [favorites, setFavorites] = useState<string[]>([]);
 
   const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,10 +25,11 @@ export default function Dogs() {
   };
 
   // FIX -- REMOVE THIS LOG
-  // console.log("favorites: ", favorites);
+  console.log("favorites: ", favorites);
 
   // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
-  const { dogs, loading, error, searchDogs, fetchNextPage } = useDogSearch();
+  const { dogs, loading, error, searchDogs, fetchNextPage, resetPage } =
+    useDogSearch();
 
   const handleSubmitSearch = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -52,11 +52,6 @@ export default function Dogs() {
     setRadius(radius);
   };
 
-  // const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   fetchNextPage();
-  // };
-
   const setIsAlphaSort = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // establishing a new var avoids state race conditions when user clicks the button
@@ -67,7 +62,6 @@ export default function Dogs() {
     });
   };
 
-  // a function for a user to set the zip code
   const setUserZip = (e: React.ChangeEvent<HTMLInputElement>) => {
     const zipCodeValue = e.target.value;
     if (!zipCodeValue) {
@@ -93,6 +87,7 @@ export default function Dogs() {
 
   const breedViewSelector = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    resetPage();
     setView("breeds");
   };
 
