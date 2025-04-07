@@ -32,6 +32,17 @@ export default function Dogs() {
   // FIX -- REMOVE THIS LOG
   console.log("favorites: ", favorites);
 
+  const submitFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log("favorites: ", favorites);
+
+    // this will send the body (an array of dog Ids) to the /api/match
+    // that will return a single ID
+
+    // I WANT TO REDIRECT TO /MATCH/[ID] AFTER THIS
+    // there I will grab the dog with that ID and display information on it
+  };
+
   // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
   const {
     dogs,
