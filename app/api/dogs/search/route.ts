@@ -23,10 +23,6 @@ export async function GET(req: NextRequest) {
   // if (sort) queryParams.append("sort", sort);
   if (size) queryParams.append("size", size);
   if (from) queryParams.append("from", from);
-  // FIXING??
-
-  console.log("Size: ", size);
-  console.log("From: ", from);
 
   // Handle sorting properly
   if (sort) {
