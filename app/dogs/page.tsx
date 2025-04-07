@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import DogList from "../components/dogs/DogList";
+import DogList from "../components/dogslist/DogList";
 import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
 import useDogSearch from "../lib/hooks/useDogSearch";
@@ -24,12 +24,24 @@ export default function Dogs() {
     fetchNextPage(e);
   };
 
+  const handlePrevPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetchPrevPage(e);
+  };
+
   // FIX -- REMOVE THIS LOG
   console.log("favorites: ", favorites);
 
   // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
-  const { dogs, loading, error, searchDogs, fetchNextPage, resetPage } =
-    useDogSearch();
+  const {
+    dogs,
+    loading,
+    error,
+    searchDogs,
+    fetchNextPage,
+    fetchPrevPage,
+    resetPage,
+  } = useDogSearch();
 
   const handleSubmitSearch = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -135,7 +147,7 @@ export default function Dogs() {
     cachedBreeds();
   }, [cachedBreeds]);
 
-  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN
+  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN??
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
@@ -146,7 +158,6 @@ export default function Dogs() {
         </div>
       )}
       <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
-        {/* FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER */}
         {loading ? (
           <Loading />
         ) : view === "dogs" ? (
@@ -157,6 +168,7 @@ export default function Dogs() {
             setIsAlphaSort={setIsAlphaSort}
             isAlpha={isAlpha}
             handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
           />
         ) : (
           <SearchDogsForm

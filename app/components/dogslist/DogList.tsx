@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import DogCard from "./DogCard";
+import DogCard from "./dogcard/DogCard";
+import DogsNav from "./dogsnav/DogsNav";
 
 export default function DogList({
   dogs,
@@ -8,6 +9,7 @@ export default function DogList({
   setIsAlphaSort,
   isAlpha,
   handleNextPage,
+  handlePrevPage,
 }: {
   dogs: Dog[];
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -15,6 +17,7 @@ export default function DogList({
   setIsAlphaSort: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isAlpha: boolean;
   handleNextPage: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handlePrevPage: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const sortedDogs = useMemo(() => {
     return [...dogs].sort((a, b) =>
@@ -41,11 +44,9 @@ export default function DogList({
               clipRule="evenodd"
             />
           </svg>
-          Back to Breeds
+          Back to Search Form
         </button>
-        <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0">
-          Available Dogs
-        </h2>
+        {/* FIX -- ABSTRACT INTO SEPARATE COMP */}
         <button
           onClick={(e) => setIsAlphaSort(e)}
           className="flex items-center bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:-translate-y-0.5 ml-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
@@ -72,17 +73,19 @@ export default function DogList({
           )}
         </button>
       </div>
+      <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0 justify-center flex">
+        Available Dogs:
+      </h2>
       <div className="grid grid-cols-2 gap-4">
         {sortedDogs.map((dog: Dog) => (
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
       </div>
-      {dogs.length === 25 ? (
-        // FIX -- ABSTRACT INTO SEPARATE COMPONENT LATER
-        <button onClick={(e) => handleNextPage(e)} className="mt-6">
-          Next
-        </button>
-      ) : null}
+      <DogsNav
+        numOfDogs={dogs.length}
+        handleNextPage={handleNextPage}
+        handlePrevPage={handlePrevPage}
+      />
     </div>
   );
 }

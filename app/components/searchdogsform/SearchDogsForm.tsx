@@ -1,7 +1,7 @@
 import React from "react";
-import Searchbar from "../searchbar/Searchbar";
-import BreedList from "../breeds/BreedList";
-import SelectMinMaxAge from "../selectage/SelectMinMaxAge";
+import Searchbar from "./searchbar/Searchbar";
+import BreedList from "./breeds/BreedList";
+import SelectMinMaxAge from "./selectage/SelectMinMaxAge";
 import SelectLocation from "../zip/SelectLocation";
 
 interface SearchDogsFormProps {

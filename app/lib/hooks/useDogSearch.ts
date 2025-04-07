@@ -152,12 +152,63 @@ export default function useDogSearch() {
     return dogsData;
   };
 
+  const fetchPrevPage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    if (e) e.preventDefault();
+    const searchSize = 25;
+    setLoading(true);
+    setError(null);
+    try {
+      const { selectedBreeds, zipCode, radius, minAge, maxAge, isAlpha } =
+        searchParamsRef.current;
+      const params = new URLSearchParams();
+      if (selectedBreeds && selectedBreeds.length > 0) {
+        selectedBreeds.forEach((breed) => {
+          params.append("breeds", breed);
+        });
+      }
+      let prevFrom = from - 25;
+      if (from - searchSize < 0) {
+        prevFrom = 0;
+      }
+      params.append("minAge", minAge.toString());
+      params.append("maxAge", maxAge.toString());
+      params.append("from", prevFrom.toString());
+      if (isAlpha) {
+        params.append("sort", "breed:asc");
+      } else {
+        params.append("sort", "breed:desc");
+      }
+      if (zipCode && radius) {
+        const location: Location = await fetchLocationByZip(zipCode);
+        if (!location) return;
+        const coords: Coordinates = {
+          lat: location.latitude,
+          lon: location.longitude,
+        };
+        const zips = await fetchZipCodesInRadius(coords, radius);
+        if (!zips) return;
+        zips.forEach((zip: string) => {
+          params.append("zipCodes", zip);
+        });
+      }
+      const dogIdsReturn = await fetchDogIds(params);
+      if (!dogIdsReturn) return;
+      const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
+      if (!dogsData) return;
+      setDogs(dogsData);
+      setLoading(false);
+      setError(null);
+    } catch (error) {
+      setLoading(false);
+      setError("Failed to fetch dogs");
+      console.error("Error fetching dogs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchNextPage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) e.preventDefault();
-
-    const searchSize = 25;
-    setFrom((prev) => prev + searchSize);
-
     setLoading(true);
     setError(null);
 
@@ -223,7 +274,6 @@ export default function useDogSearch() {
     minAge: number,
     maxAge: number,
     isAlpha: boolean
-    // from: number
   ) => {
     setLoading(true);
     setError(null);
@@ -247,7 +297,6 @@ export default function useDogSearch() {
       }
       params.append("minAge", minAge.toString());
       params.append("maxAge", maxAge.toString());
-
       params.append("from", from.toString());
 
       if (isAlpha) {
@@ -274,13 +323,6 @@ export default function useDogSearch() {
 
       const dogIdsReturn = await fetchDogIds(params);
 
-      // if (dogIdsReturn.next) {
-      //   setNextPage(dogIdsReturn.next);
-      // }
-      // if (dogIdsReturn.prev) {
-      //   setPrevPage(dogIdsReturn.prev);
-      // }
-
       if (!dogIdsReturn) return;
       const dogsData = await fetchDogDetails(dogIdsReturn.resultIds);
       if (!dogsData) return;
@@ -302,6 +344,7 @@ export default function useDogSearch() {
     error,
     searchDogs,
     fetchNextPage,
+    fetchPrevPage,
     resetPage,
   };
 }
