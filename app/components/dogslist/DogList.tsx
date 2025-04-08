@@ -11,6 +11,7 @@ export default function DogList({
   isAlpha,
   handleNextPage,
   handlePrevPage,
+  page,
 }: {
   dogs: Dog[];
   breedViewSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -19,6 +20,7 @@ export default function DogList({
   isAlpha: boolean;
   handleNextPage: (e: React.MouseEvent<HTMLButtonElement>) => void;
   handlePrevPage: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  page: number;
 }) {
   const sortedDogs = useMemo(() => {
     return [...dogs].sort((a, b) =>
@@ -61,6 +63,7 @@ export default function DogList({
         numOfDogs={dogs.length}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
+        page={page}
       />
     </div>
   );

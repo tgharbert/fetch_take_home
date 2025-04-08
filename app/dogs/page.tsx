@@ -18,21 +18,23 @@ export default function Dogs() {
   const [isAlpha, setIsAlpha] = useState<boolean>(true);
   const [radius, setRadius] = useState<number>(25);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [page, setPage] = useState<number>(1);
 
   const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setPage((prev) => prev + 1);
     fetchNextPage(e);
   };
 
   const handlePrevPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setPage((prev) => prev - 1);
     fetchPrevPage(e);
   };
 
   // FIX -- MOVE LOADING TO THIS LEVEL - OUT OF THE HOOK
   const submitFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("favorites: ", favorites);
     try {
       const res = await fetch(`/api/match`, {
         method: "POST",
@@ -77,6 +79,7 @@ export default function Dogs() {
     isAlpha: boolean
   ) => {
     setView("dogs");
+    setPage(1);
     searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, isAlpha);
   };
 
@@ -204,6 +207,7 @@ export default function Dogs() {
             isAlpha={isAlpha}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
+            page={page}
           />
         ) : (
           <div className="flex items-center justify-center h-[calc(100vh-100px)]">
