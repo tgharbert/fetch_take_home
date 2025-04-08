@@ -26,7 +26,7 @@ export default function DogList({
   }, [dogs]);
 
   return (
-    <div className="w-1/2">
+    <div className="w-1/2 mt-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
         <button
           onClick={(e) => breedViewSelector(e)}

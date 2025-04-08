@@ -173,16 +173,15 @@ export default function Dogs() {
 
   // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN??
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100">
       <Header />
-
       {error && (
         // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
         <div className="flex flex-col items-center justify-center">
           <p className="text-red-500 font-medium">{error}</p>
         </div>
       )}
-      <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
+      <main className="w-full flex flex-col items-center justify-center ">
         {favorites.length > 0 && (
           <div>
             <button
@@ -194,7 +193,9 @@ export default function Dogs() {
           </div>
         )}
         {loading ? (
-          <Loading />
+          <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+            <Loading />
+          </div>
         ) : view === "dogs" ? (
           <DogList
             dogs={dogs}
@@ -206,22 +207,24 @@ export default function Dogs() {
             handlePrevPage={handlePrevPage}
           />
         ) : (
-          <SearchDogsForm
-            breeds={breeds}
-            setUserZip={setUserZip}
-            setUserRadius={setUserRadius}
-            selectedBreeds={selectedBreeds}
-            addBreed={addBreed}
-            zip={zip}
-            radius={radius}
-            removeBreed={removeBreed}
-            minAge={minAge}
-            setMinAge={setMinAge}
-            maxAge={maxAge}
-            setMaxAge={setMaxAge}
-            isAlpha={isAlpha}
-            handleSubmitSearch={handleSubmitSearch}
-          />
+          <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+            <SearchDogsForm
+              breeds={breeds}
+              setUserZip={setUserZip}
+              setUserRadius={setUserRadius}
+              selectedBreeds={selectedBreeds}
+              addBreed={addBreed}
+              zip={zip}
+              radius={radius}
+              removeBreed={removeBreed}
+              minAge={minAge}
+              setMinAge={setMinAge}
+              maxAge={maxAge}
+              setMaxAge={setMaxAge}
+              isAlpha={isAlpha}
+              handleSubmitSearch={handleSubmitSearch}
+            />
+          </div>
         )}
       </main>
     </div>
