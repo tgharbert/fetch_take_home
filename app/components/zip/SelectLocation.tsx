@@ -32,7 +32,6 @@ export default function SelectLocation({
             value={radius}
             className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400"
             required
-            // defaultValue={"25"}
           >
             <option value="5">5 miles</option>
             <option value="10">10 miles</option>

@@ -171,7 +171,6 @@ export default function Dogs() {
     cachedBreeds();
   }, [cachedBreeds]);
 
-  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN??
   return (
     <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100">
       <Header />

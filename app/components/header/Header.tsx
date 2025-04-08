@@ -28,7 +28,6 @@ export default function Header() {
   return (
     <header className="bg-purple-700 shadow-lg w-full sticky top-0 z-50">
       <div className=" mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
-        {/* Logo and Tagline */}
         <div className="flex items-center mb-3 md:mb-0">
           <Image
             src="/FetchTH_fullsize.png"
