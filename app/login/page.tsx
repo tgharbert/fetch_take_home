@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, DogIcon, PawPrint } from "lucide-react";
+import Image from "next/image";
+import { User, Mail, DogIcon } from "lucide-react";
 
 export default function Login() {
   const [name, setName] = useState("");
@@ -34,15 +35,22 @@ export default function Login() {
     <div className="min-h-screen w-full flex flex-col justify-center items-center p-4 bg-orange-100">
       <div className="w-full max-w-md">
         {/* Logo/Brand Container */}
-        <div className="mb-8 text-center items-center">
+        <div className="mb-8 text-center items-center flex flex-col">
           {/* <div className="mb-2"></div> */}
 
           <h1 className="text-4xl font-extrabold text-purple-600 flex items-center gap-2 ml-2">
             Fetch
-            <PawPrint className="h-12 w-12 pb-2" />
+            <Image
+              src="/FetchTH_fullsize.png"
+              alt="Fetch Logo"
+              width={50}
+              height={50}
+              priority
+            />
+            {/* <PawPrint className="h-12 w-12 pb-2" /> */}
           </h1>
 
-          <p className="text-orange-600 mt-2 font-semibold text-lg">
+          <p className="text-orange-600 mt-2 font-semibold ">
             Find your new best friend!
           </p>
         </div>
