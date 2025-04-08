@@ -29,18 +29,31 @@ export default function Dogs() {
     fetchPrevPage(e);
   };
 
-  // FIX -- REMOVE THIS LOG
-  console.log("favorites: ", favorites);
-
+  // FIX -- MOVE LOADING TO THIS LEVEL - OUT OF THE HOOK
   const submitFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     console.log("favorites: ", favorites);
-
-    // this will send the body (an array of dog Ids) to the /api/match
-    // that will return a single ID
-
-    // I WANT TO REDIRECT TO /MATCH/[ID] AFTER THIS
-    // there I will grab the dog with that ID and display information on it
+    try {
+      const res = await fetch(`/api/match`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(favorites),
+      });
+      if (res.status === 401) {
+        router.push("/login");
+      }
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await res.json();
+      // redirect to the match page with the ID of the dog
+      router.push(`/match/${data.match}`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // custom hook to fetch dogs - look in lib/hooks/useDogSearch.ts
@@ -162,6 +175,7 @@ export default function Dogs() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Header />
+
       {error && (
         // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
         <div className="flex flex-col items-center justify-center">
@@ -169,6 +183,16 @@ export default function Dogs() {
         </div>
       )}
       <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
+        {favorites.length > 0 && (
+          <div>
+            <button
+              onClick={(e) => submitFavorites(e)}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Submit Favorites
+            </button>
+          </div>
+        )}
         {loading ? (
           <Loading />
         ) : view === "dogs" ? (

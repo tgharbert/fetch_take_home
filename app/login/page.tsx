@@ -21,10 +21,8 @@ export default function Login() {
         body: JSON.stringify({ name, email }),
       });
       if (!response.ok) {
-        // HANDLE ERROR IN DOM
         throw new Error("Network response was not ok");
       }
-      // redirect to '/'
       router.push("/dogs");
     } catch (error) {
       console.error(error);
