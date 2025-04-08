@@ -86,9 +86,9 @@ export default function Searchbar({ breeds, onSelectBreed }: SearchbarProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto" ref={searchRef}>
+    <div className="w-full max-w-md mx-auto " ref={searchRef}>
       <form onSubmit={handleSubmit} className="relative">
-        <div className="relative flex items-center w-full">
+        <div className="relative flex items-center w-full ">
           <input
             type="text"
             id="search"

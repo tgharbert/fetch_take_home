@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
-import { PawPrint, LogOut } from "lucide-react"; // Import Lucide icons
+import { LogOut } from "lucide-react"; // Import Lucide icons
+import Image from "next/image";
 
 export default function Header() {
   const router = useRouter();
@@ -29,7 +30,14 @@ export default function Header() {
       <div className=" mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Tagline */}
         <div className="flex items-center mb-3 md:mb-0">
-          <PawPrint className="h-7 w-7 text-orange-300 mr-2" />
+          <Image
+            src="/FetchTH_fullsize.png"
+            className="mr-2"
+            alt="Fetch Logo"
+            width={50}
+            height={50}
+            priority
+          />
           <div>
             <h1 className="text-3xl font-extrabold text-white tracking-tight">
               Fetch
