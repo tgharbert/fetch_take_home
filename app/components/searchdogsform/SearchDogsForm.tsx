@@ -51,14 +51,10 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="w-full max-w-md mx-auto px-2">
-        <Searchbar
-          breeds={breeds}
-          onSelectBreed={(breed) => {
-            addBreed(new MouseEvent("click") as any, breed);
-          }}
-        />
         <div>
           <BreedList
+            breeds={breeds}
+            addBreed={addBreed}
             selectedBreeds={selectedBreeds}
             removeBreed={removeBreed}
           />
