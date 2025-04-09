@@ -51,7 +51,7 @@ export default function Dogs() {
       if (!res.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = await res.json();
+      const data: string = await res.json();
       // redirect to the match page with the ID of the dog
       router.push(`/match/${data.match}`);
     } catch (error) {
@@ -131,8 +131,11 @@ export default function Dogs() {
     setView("breeds");
   };
 
-  const addBreed = (e: React.MouseEvent<HTMLButtonElement>, breed: string) => {
-    e.preventDefault();
+  const addBreed = (
+    e: React.MouseEvent<HTMLButtonElement> | null,
+    breed: string
+  ) => {
+    e?.preventDefault();
     setSelectedBreeds((prev) => {
       if (prev.includes(breed)) {
         return prev;

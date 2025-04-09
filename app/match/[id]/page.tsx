@@ -2,19 +2,19 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 
-interface MatchPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function MatchPage({ params }: MatchPageProps) {
+export default async function MatchPage({
+  params,
+}: {
+  params: Promise<string>;
+}) {
   const cookieStore = await cookies();
   const userSession = cookieStore.get("fetch-access-token");
 
   if (!userSession) {
     redirect("/login");
   }
+
+  const id = await params;
 
   const getMatch = async (id: string) => {
     const cookieHeader = `fetch-access-token=${userSession.value}`;
@@ -42,7 +42,6 @@ export default async function MatchPage({ params }: MatchPageProps) {
     }
   };
 
-  const { id } = params;
   const matchDog = await getMatch(id);
 
   return (
