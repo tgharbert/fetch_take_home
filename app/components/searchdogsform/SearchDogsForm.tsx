@@ -13,7 +13,10 @@ interface SearchDogsFormProps {
   ) => void;
   zip: string | null;
   radius: number;
-  addBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
+  addBreed: (
+    e: React.MouseEvent<HTMLButtonElement> | null,
+    breed: string
+  ) => void;
   removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
   minAge: number;
   setMinAge: (age: number) => void;

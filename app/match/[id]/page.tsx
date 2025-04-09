@@ -5,7 +5,7 @@ import Image from "next/image";
 export default async function MatchPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<string>;
 }) {
   const cookieStore = await cookies();
   const userSession = cookieStore.get("fetch-access-token");
@@ -13,6 +13,8 @@ export default async function MatchPage({
   if (!userSession) {
     redirect("/login");
   }
+
+  const id = await params;
 
   const getMatch = async (id: string) => {
     const cookieHeader = `fetch-access-token=${userSession.value}`;
@@ -40,14 +42,10 @@ export default async function MatchPage({
     }
   };
 
-  const { id } = await params;
-
-  // get the id from the URL
   const matchDog = await getMatch(id);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-orange-100 p-4">
-      {/* // <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100"> */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-md w-full transition-all duration-300 hover:shadow-xl border border-gray-100">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-1">

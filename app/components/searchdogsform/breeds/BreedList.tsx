@@ -8,7 +8,10 @@ export default function DogList({
   addBreed,
 }: {
   breeds: string[];
-  addBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
+  addBreed: (
+    e: React.MouseEvent<HTMLButtonElement> | null,
+    breed: string
+  ) => void;
   selectedBreeds: string[];
   removeBreed: (e: React.MouseEvent<HTMLButtonElement>, breed: string) => void;
 }) {
@@ -17,7 +20,7 @@ export default function DogList({
       <Searchbar
         breeds={breeds}
         onSelectBreed={(breed: string) => {
-          addBreed(new MouseEvent("click") as any, breed);
+          addBreed(null, breed);
         }}
       />
       <h2 className="font-semibold text-xl text-gray-800 mb-1 justify-center flex mt-2">
