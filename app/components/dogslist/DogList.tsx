@@ -29,7 +29,8 @@ export default function DogList({
   }, [dogs]);
 
   return (
-    <div className="w-1/2 mt-4">
+    // <div className="w-1/2 mt-4">
+    <div className=" mt-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
         <button
           onClick={(e) => breedViewSelector(e)}
@@ -43,7 +44,7 @@ export default function DogList({
           onClick={(e) => setIsAlphaSort(e)}
           className="flex items-center bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:-translate-y-0.5 ml-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
         >
-          <span className="mr-1.5">Sort</span>
+          <span className="mr-1.5">Sort By Breed:</span>
           {isAlpha ? (
             <ArrowDownZA className="h-4 w-4 text-orange-500" />
           ) : (
@@ -54,7 +55,7 @@ export default function DogList({
       <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0 justify-center flex">
         Available Dogs:
       </h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 mt-4">
         {sortedDogs.map((dog: Dog) => (
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}
