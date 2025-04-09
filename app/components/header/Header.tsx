@@ -27,18 +27,18 @@ export default function Header() {
 
   return (
     <header className="bg-purple-700 shadow-lg w-full sticky top-0 z-50">
-      <div className=" mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center mb-3 md:mb-0">
+      <div className=" mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between">
+        <div className="flex items-center mb-3 md:mb-0 ">
           <Image
             src="/FetchTH_fullsize.png"
             className="mr-2"
             alt="Fetch Logo"
-            width={50}
-            height={50}
+            width={80}
+            height={80}
             priority
           />
           <div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">
               Fetch
             </h1>
             <h2 className="text-sm text-purple-200 font-medium -mt-1">

@@ -46,7 +46,8 @@ export default async function MatchPage({
   const matchDog = await getMatch(id);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-orange-100 p-4">
+      {/* // <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100"> */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-md w-full transition-all duration-300 hover:shadow-xl border border-gray-100">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-1">
@@ -57,7 +58,7 @@ export default async function MatchPage({
           </p>
 
           <div className="flex justify-center mb-6">
-            <div className="relative h-64 w-64 rounded-lg overflow-hidden border-4 border-orange-100">
+            <div className="relative h-64 w-64 rounded-lg overflow-hidden border-4 border-purple-400">
               <Image
                 src={matchDog[0].img}
                 alt={matchDog[0].name}

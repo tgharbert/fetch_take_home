@@ -7,6 +7,7 @@ import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
 import useDogSearch from "../lib/hooks/useDogSearch";
 import Loading from "../components/loading/Loading";
+import { BookHeart } from "lucide-react";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -185,12 +186,13 @@ export default function Dogs() {
       )}
       <main className="w-full flex flex-col items-center justify-center ">
         {favorites.length > 0 && (
-          <div>
+          <div className="-mb-12 mt-6">
             <button
               onClick={(e) => submitFavorites(e)}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="bg-purple-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-purple-400 transition-colors duration-200 shadow-sm hover:shadow hover:-translate-y-0.5 transform"
             >
-              Submit Favorites
+              Find My Match
+              <BookHeart className="h-5 w-5" />
             </button>
           </div>
         )}
