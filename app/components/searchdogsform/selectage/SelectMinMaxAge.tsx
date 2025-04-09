@@ -10,12 +10,12 @@ export default function SelectMinMaxAge({
   setMaxAge: (age: number) => void;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full mt-4 border border-gray-100">
+    <div className="bg-white rounded-lg shadow-md p-4 w-full mt-4 border border-gray-100 ">
       <h2 className="font-semibold text-lg text-gray-800 mb-4 text-center">
         Age Range:
       </h2>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex justify-center items-center gap-4 mb-4">
         {/* Min Age Selector */}
         <div className="flex flex-col">
           <label
@@ -72,7 +72,9 @@ export default function SelectMinMaxAge({
           <div
             className="bg-gradient-to-r from-orange-400 to-orange-500 h-full"
             style={{
-              width: `${(Math.min(maxAge, 25) / 25) * 100}%`,
+              width: `${
+                ((Math.min(maxAge, 25) - Math.min(minAge, 25)) / 25) * 100
+              }%`,
               marginLeft: `${(Math.min(minAge, 25) / 25) * 100}%`,
             }}
           ></div>

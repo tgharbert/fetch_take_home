@@ -9,6 +9,8 @@ export default function useDogSearch() {
   const [from, setFrom] = useState<number>(0);
   const router = useRouter();
 
+  console.log("from: ", from);
+
   const searchParamsRef = useRef({
     selectedBreeds: [] as string[],
     zipCode: null as string | null,
@@ -223,6 +225,8 @@ export default function useDogSearch() {
         });
       }
       const nextFrom = from + 25;
+      setFrom(nextFrom);
+      console.log("nextFrom: ", nextFrom);
       params.append("minAge", minAge.toString());
       params.append("maxAge", maxAge.toString());
       params.append("from", nextFrom.toString());

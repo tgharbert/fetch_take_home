@@ -13,9 +13,9 @@ export default function SelectLocation({
   zip: string | null;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-5 w-full mt-4 border border-gray-100">
-      <h2 className="font-semibold text-lg text-gray-800 mb-4">
-        Location Settings
+    <div className="bg-white rounded-lg shadow-md p-5 w-full mt-2 border border-gray-100">
+      <h2 className="font-semibold text-xl text-gray-800 mb-4 justify-center flex">
+        Location Settings:
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="flex flex-col">
@@ -32,7 +32,6 @@ export default function SelectLocation({
             value={radius}
             className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400"
             required
-            // defaultValue={"25"}
           >
             <option value="5">5 miles</option>
             <option value="10">10 miles</option>

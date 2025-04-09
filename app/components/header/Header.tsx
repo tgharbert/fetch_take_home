@@ -1,4 +1,6 @@
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react"; // Import Lucide icons
+import Image from "next/image";
 
 export default function Header() {
   const router = useRouter();
@@ -24,39 +26,35 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-purple-700 shadow-md w-full">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between">
-        {/* Logo and Tagline */}
-        <div className="flex flex-col items-center md:items-start mb-3 md:mb-0">
-          <h1 className="text-3xl font-bold text-white">Fetch</h1>
-          <h2 className="text-sm md:text-base text-purple-100 font-medium">
-            Find your new best friend!
-          </h2>
+    <header className="bg-purple-700 shadow-lg w-full sticky top-0 z-50">
+      <div className=" mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between">
+        <div className="flex items-center mb-3 md:mb-0 ">
+          <Image
+            src="/FetchTH_fullsize.png"
+            className="mr-2"
+            alt="Fetch Logo"
+            width={80}
+            height={80}
+            priority
+          />
+          <div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">
+              Fetch
+            </h1>
+            <h2 className="text-sm text-purple-200 font-medium -mt-1">
+              Find your new best friend!
+            </h2>
+          </div>
         </div>
 
-        {/* Navigation and Logout Button */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleLogout}
-            className="bg-purple-700 text-white hover:bg-purple-400 px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-opacity-50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-1.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            Logout
-          </button>
-        </div>
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="bg-white/10 text-white hover:bg-white/20 px-4 py-2 rounded-full font-medium transition-all duration-300 flex items-center hover:-translate-y-0.5 backdrop-blur-sm"
+        >
+          <LogOut className="h-5 w-5 mr-1.5" />
+          Logout
+        </button>
       </div>
     </header>
   );

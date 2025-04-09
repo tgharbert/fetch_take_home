@@ -1,5 +1,4 @@
 import React from "react";
-import Searchbar from "./searchbar/Searchbar";
 import BreedList from "./breeds/BreedList";
 import SelectMinMaxAge from "./selectage/SelectMinMaxAge";
 import SelectLocation from "../zip/SelectLocation";
@@ -49,16 +48,12 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
   handleSubmitSearch,
 }) => {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="w-full max-w-md mx-auto px-4">
-        <Searchbar
-          breeds={breeds}
-          onSelectBreed={(breed) => {
-            addBreed(new MouseEvent("click") as any, breed);
-          }}
-        />
-        <div className="mt-4 mb-4">
+    <div className="flex flex-col gap-2 w-full">
+      <div className="w-full max-w-md mx-auto px-2">
+        <div>
           <BreedList
+            breeds={breeds}
+            addBreed={addBreed}
             selectedBreeds={selectedBreeds}
             removeBreed={removeBreed}
           />
@@ -92,7 +87,7 @@ const SearchDogsForm: React.FC<SearchDogsFormProps> = ({
               isAlpha
             )
           }
-          className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
+          className="bg-orange-500 text-white font-bold py-2.5 px-6 rounded-md shadow-md hover:shadow-lg  hover:bg-orange-400 transform hover:-translate-y-0.5 "
         >
           Submit Search
         </button>

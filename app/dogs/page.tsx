@@ -7,6 +7,7 @@ import Header from "../components/header/Header";
 import SearchDogsForm from "../components/searchdogsform/SearchDogsForm";
 import useDogSearch from "../lib/hooks/useDogSearch";
 import Loading from "../components/loading/Loading";
+import { BookHeart } from "lucide-react";
 
 export default function Dogs() {
   const [breeds, setBreeds] = useState<string[]>([]);
@@ -18,21 +19,23 @@ export default function Dogs() {
   const [isAlpha, setIsAlpha] = useState<boolean>(true);
   const [radius, setRadius] = useState<number>(25);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [page, setPage] = useState<number>(1);
 
   const handleNextPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setPage((prev) => prev + 1);
     fetchNextPage(e);
   };
 
   const handlePrevPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setPage((prev) => prev - 1);
     fetchPrevPage(e);
   };
 
   // FIX -- MOVE LOADING TO THIS LEVEL - OUT OF THE HOOK
   const submitFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("favorites: ", favorites);
     try {
       const res = await fetch(`/api/match`, {
         method: "POST",
@@ -77,6 +80,7 @@ export default function Dogs() {
     isAlpha: boolean
   ) => {
     setView("dogs");
+    setPage(1);
     searchDogs(e, selectedBreeds, zip, radius, minAge, maxAge, isAlpha);
   };
 
@@ -171,30 +175,31 @@ export default function Dogs() {
     cachedBreeds();
   }, [cachedBreeds]);
 
-  // FIX -- ADD USECONTEXT TO PROVIDE PROPS RATHER THAN DRILLING THEM ALL DOWN??
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100">
       <Header />
-
       {error && (
         // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
         <div className="flex flex-col items-center justify-center">
           <p className="text-red-500 font-medium">{error}</p>
         </div>
       )}
-      <main className="w-full max-w-6xl flex flex-col items-center justify-center gap-8">
+      <main className="w-full flex flex-col items-center justify-center ">
         {favorites.length > 0 && (
-          <div>
+          <div className="-mb-12 mt-6">
             <button
               onClick={(e) => submitFavorites(e)}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="bg-purple-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-purple-400 transition-colors duration-200 shadow-sm hover:shadow hover:-translate-y-0.5 transform"
             >
-              Submit Favorites
+              Find My Match
+              <BookHeart className="h-5 w-5" />
             </button>
           </div>
         )}
         {loading ? (
-          <Loading />
+          <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+            <Loading />
+          </div>
         ) : view === "dogs" ? (
           <DogList
             dogs={dogs}
@@ -204,24 +209,27 @@ export default function Dogs() {
             isAlpha={isAlpha}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
+            page={page}
           />
         ) : (
-          <SearchDogsForm
-            breeds={breeds}
-            setUserZip={setUserZip}
-            setUserRadius={setUserRadius}
-            selectedBreeds={selectedBreeds}
-            addBreed={addBreed}
-            zip={zip}
-            radius={radius}
-            removeBreed={removeBreed}
-            minAge={minAge}
-            setMinAge={setMinAge}
-            maxAge={maxAge}
-            setMaxAge={setMaxAge}
-            isAlpha={isAlpha}
-            handleSubmitSearch={handleSubmitSearch}
-          />
+          <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+            <SearchDogsForm
+              breeds={breeds}
+              setUserZip={setUserZip}
+              setUserRadius={setUserRadius}
+              selectedBreeds={selectedBreeds}
+              addBreed={addBreed}
+              zip={zip}
+              radius={radius}
+              removeBreed={removeBreed}
+              minAge={minAge}
+              setMinAge={setMinAge}
+              maxAge={maxAge}
+              setMaxAge={setMaxAge}
+              isAlpha={isAlpha}
+              handleSubmitSearch={handleSubmitSearch}
+            />
+          </div>
         )}
       </main>
     </div>
