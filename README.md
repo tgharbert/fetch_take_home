@@ -2,6 +2,7 @@
   <h1 style="margin-right: 10px;">Fetch Take Home</h1>
   <img src="public/FetchTH_fullsize.png" alt="Fetch Logo" width="53" height="30" style="padding-bottom: 2rem;"/>
 </div>
+
 ## 📋 Features
 
 - **Dog Search with Multiple Filters**
