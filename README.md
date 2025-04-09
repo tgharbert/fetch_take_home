@@ -3,6 +3,13 @@
   <img src="public/FetchTH_fullsize.png" alt="Fetch Logo" width="53" height="30" style="padding-bottom: 2rem;"/>
 </div>
 
+<div align="center">
+  Check out the deployed version here:
+</div>
+<div align="center">
+  https://fetchtakehome.vercel.app
+</div>
+
 ## 📋 Features
 
 - **Dog Search with Multiple Filters**
