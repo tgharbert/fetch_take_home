@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Heart, MapPin } from "lucide-react";
+import { useState } from "react";
 
 const DogCard = ({
   dog,
@@ -8,6 +9,13 @@ const DogCard = ({
   dog: Dog;
   addToFavorites: (dogId: string) => void;
 }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const toggleFavorite = (dog: Dog) => {
+    addToFavorites(dog.id);
+    setIsFavorite((prev: boolean) => !prev);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg mt-4 ">
       {/* Image container with fixed aspect ratio */}
@@ -20,12 +28,21 @@ const DogCard = ({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {/* Favorite button positioned in top-right corner */}
-        <button
-          className="absolute top-3 right-3 bg-white text-orange-500 hover:bg-orange-500 hover:text-white rounded-full p-2 shadow-md transition-colors duration-200"
-          onClick={() => addToFavorites(dog.id)}
-        >
-          <Heart className="h-5 w-5" />
-        </button>
+        {isFavorite ? (
+          <button
+            className="absolute top-3 right-3 bg-red-500 text-w-500 hover:bg-red-300 hover:text-white rounded-full p-2 shadow-md transition-colors duration-200"
+            onClick={() => toggleFavorite(dog)}
+          >
+            <Heart className="h-5 w-5 text-white" />
+          </button>
+        ) : (
+          <button
+            className="absolute top-3 right-3 bg-white  hover:bg-red-300 hover:text-white rounded-full p-2 shadow-md transition-colors duration-200"
+            onClick={() => toggleFavorite(dog)}
+          >
+            <Heart className="h-5 w-5 text-gray-300" />
+          </button>
+        )}
       </div>
 
       {/* Content section */}
