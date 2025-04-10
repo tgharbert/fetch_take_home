@@ -35,13 +35,6 @@ export async function GET(req: NextRequest) {
     // ALWAYS provide a default sort to ensure consistent pagination
     queryParams.append("sort", "breed:asc");
   }
-  console.log("queryParams", queryParams.toString());
-
-  // if (isAlpha) {
-  //   queryParams.append("isAlpha", "sort=breed:asc");
-  // } else {
-  //   queryParams.append("isAlpha", "sort=breed:desc");
-  // }
 
   // Add all breeds to the query
   if (breeds && breeds.length > 0) {

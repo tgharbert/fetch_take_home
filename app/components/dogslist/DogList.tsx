@@ -55,7 +55,7 @@ export default function DogList({
       <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0 justify-center flex">
         Available Dogs:
       </h2>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 mt-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 xs:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 mt-4">
         {sortedDogs.map((dog: Dog) => (
           <DogCard key={dog.id} dog={dog} addToFavorites={addToFavorites} />
         ))}

@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 
 export async function GET(req: Request) {
-  const baseUrl = "https://frontend-take-home-service.fetch.com";
-
   try {
     // pull the cookie out of the headers
     const cookie = req.headers.get("cookie");
@@ -13,7 +11,7 @@ export async function GET(req: Request) {
       return redirect("/login");
     }
 
-    const url = `${baseUrl}/dogs/breeds`;
+    const url = `${process.env.BASE_URL}/dogs/breeds`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
