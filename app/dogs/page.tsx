@@ -179,7 +179,7 @@ export default function Dogs() {
   }, [cachedBreeds]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full align-middle bg-orange-100">
+    <div className="flex flex-col h-screen w-full align-middle bg-orange-100">
       <Header />
       {error && (
         // FIX -- ABSTRACT INTO SEPARATE ERROR COMPONENT LATER
@@ -187,7 +187,7 @@ export default function Dogs() {
           <p className="text-red-500 font-medium">{error}</p>
         </div>
       )}
-      <main className="w-full flex flex-col items-center justify-center ">
+      <main className="w-full flex flex-col items-center justify-center overflow bg-orange-100">
         {favorites.length > 0 && (
           <div className="-mb-12 mt-6">
             <button
@@ -204,18 +204,20 @@ export default function Dogs() {
             <Loading />
           </div>
         ) : view === "dogs" ? (
-          <DogList
-            dogs={dogs}
-            breedViewSelector={breedViewSelector}
-            addToFavorites={addToFavorites}
-            setIsAlphaSort={setIsAlphaSort}
-            isAlpha={isAlpha}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            page={page}
-          />
+          <div className="flex-1 bg-orange-100 overflow-auto p-4">
+            <DogList
+              dogs={dogs}
+              breedViewSelector={breedViewSelector}
+              addToFavorites={addToFavorites}
+              setIsAlphaSort={setIsAlphaSort}
+              isAlpha={isAlpha}
+              handleNextPage={handleNextPage}
+              handlePrevPage={handlePrevPage}
+              page={page}
+            />
+          </div>
         ) : (
-          <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+          <div className="flex items-center justify-center overflow-auto max-h-full w-full mt-6">
             <SearchDogsForm
               breeds={breeds}
               setUserZip={setUserZip}
