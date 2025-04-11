@@ -25,12 +25,22 @@ export default function Dogs() {
     e.preventDefault();
     setPage((prev) => prev + 1);
     fetchNextPage(e);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // For smooth scrolling
+    });
   };
 
   const handlePrevPage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setPage((prev) => prev - 1);
     fetchPrevPage(e);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // For smooth scrolling
+    });
   };
 
   // FIX -- MOVE LOADING TO THIS LEVEL - OUT OF THE HOOK
