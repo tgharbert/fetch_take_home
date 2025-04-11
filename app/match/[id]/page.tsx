@@ -2,10 +2,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 
+type MatchParams = {
+  id: string;
+};
+
 export default async function MatchPage({
   params,
 }: {
-  params: Promise<string>;
+  params: Promise<MatchParams>;
 }) {
   const cookieStore = await cookies();
   const userSession = cookieStore.get("fetch-access-token");
@@ -14,7 +18,7 @@ export default async function MatchPage({
     redirect("/login");
   }
 
-  const id = await params;
+  const { id } = await params;
 
   const getMatch = async (id: string) => {
     const cookieHeader = `fetch-access-token=${userSession.value}`;

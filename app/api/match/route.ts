@@ -6,8 +6,6 @@ export async function POST(req: NextRequest) {
     // Get the array of IDs from the request body
     const dogIds = await req.json();
 
-    console.log("dogIds: ", dogIds);
-
     const cookie = req.headers.get("cookie");
 
     if (!cookie) {
@@ -42,9 +40,6 @@ export async function POST(req: NextRequest) {
 
     // Return the data from the external API
     const dogs = await response.json();
-    // console.log("dogs: ", dogs.match);
-    // return redirect(`/match/${dogs.match}`);
-    // return NextResponse.redirect(new URL(`/match/${dogs.match}`, req.url));
 
     return NextResponse.json(dogs);
   } catch (error) {

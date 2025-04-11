@@ -17,7 +17,7 @@ const DogCard = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg mt-4 ">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg mt-4 w-80">
       {/* Image container with fixed aspect ratio */}
       <div className="relative h-64 w-full">
         <Image
